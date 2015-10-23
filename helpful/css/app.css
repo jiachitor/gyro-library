@@ -1,0 +1,44 @@
+ul {
+  margin: 0;
+  padding: 0;
+}
+li {
+  list-style: none;
+}
+p{
+  margin: 0;
+}
+header{
+  padding: 20px;
+}
+header h1{
+  text-align: center;
+}
+.container{
+  padding: 30px 20px;
+}
+
+section{
+  margin-bottom: 30px;
+}
+section h2{
+  margin-bottom: 20px;
+}
+
+section li{
+  padding: 15px 0;
+  border-bottom: 1px solid #3C763D;
+}
+
+section li b{
+  margin-right: 20px;
+}
+
+section li a{
+  text-decoration: none;
+}
+
+section li p{
+  line-height: 20px;
+  padding: 10px 0 0;
+}

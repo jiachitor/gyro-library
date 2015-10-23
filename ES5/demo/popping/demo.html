@@ -1,0 +1,74 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>拖放效果</title>
+<link href="http://static.9xwan.com/www/css/reset.css" media="screen" rel="stylesheet" type="text/css" />
+<style>
+	#idContainer{ border:10px solid #990000; width:600px; height:300px;}
+	#idDrag{ border:5px solid #C4E3FD; background:#C4E3FD; width:50px; height:50px; top:50px; left:50px;}
+	#idHandle{cursor:move; height:25px; background:#0000FF; overflow:hidden;}
+</style>
+    <script type="text/javascript" src="../jclibrary/jcl-core.js"></script>
+    <script type="text/javascript" src="../plug-in/drag.js"></script>
+</head>
+
+<body id="body">
+	<div id="idContainer">
+		<div id="idDrag">
+			<div id="idHandle"></div>
+		</div>
+	</div>
+	<input id="idReset" type="button" value="复位" />
+	<input id="idLock" type="button" value="锁定" />
+	<input id="idLockX" type="button" value="锁定水平" />
+	<input id="idLockY" type="button" value="锁定垂直" />
+	<input id="idLimit" type="button" value="范围锁定" />
+	<input id="idLimitOff" type="button" value="取消范围锁定" />
+	<br />
+	拖放状态：<span id="idShow">未开始</span> 
+</body>
+</html>
+<script>
+
+var drag = new Drag("idDrag", {
+	mxContainer: "idContainer",
+	Handle: "idHandle",
+	Limit: true,
+	View:true,  //限制在可视区域移动
+	onStart: function() {
+		document.getElementById("idShow").innerHTML = "开始拖放";
+	},
+	onMove: function() {
+		document.getElementById("idShow").innerHTML = "left：" + this.Drag.offsetLeft + "；top:" + this.Drag.offsetTop;
+	},
+	onStop: function() {
+		document.getElementById("idShow").innerHTML = "结束拖放";
+	}
+});
+
+document.getElementById("idReset").onclick = function() {
+	drag.Limit = true;
+	drag.mxLeft = drag.mxTop = 0;
+	drag.mxRight = drag.mxBottom = 9999;
+	drag.LockX = drag.LockY = drag.Lock = false;
+};
+
+document.getElementById("idLock").onclick = function() {
+	drag.Lock = true;
+};
+document.getElementById("idLockX").onclick = function() {
+	drag.LockX = true;
+};
+document.getElementById("idLockY").onclick = function() {
+	drag.LockY = true;
+};
+document.getElementById("idLimit").onclick = function() {
+	drag.mxRight = drag.mxBottom = 200;
+	drag.Limit = true;
+};
+document.getElementById("idLimitOff").onclick = function() {
+	drag.Limit = false;
+};
+
+</script>
