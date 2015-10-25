@@ -11,8 +11,8 @@ var fs = require("fs"),
     browserify = require("browserify"),
     babelify = require('babelify');
 
-var project_list = ['detector','detectorSmall'];
-var project = 'detectorSmall';
+var project_list = ['detector','qrcode','upload'];
+var project = 'upload';
 
 //browserify  所以项目的编译
 var _bundleConfigs = [];

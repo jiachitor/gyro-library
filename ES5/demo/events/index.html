@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge, chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no" />
+    <title>Events</title>
+    <link rel="stylesheet" href="./css/app.css">
+  </head>
+
+  <body>
+    <p>1</p>
+    <div id="output-html"></div>
+    <p>2</p>
+    <div id="output-md"></div>
+  </body>
+  <script src="../../src/plug-in/events.js"></script>
+  <script>
+    var Events = require('events');
+
+    var object = new Events();
+    object.on('expand', function() {
+        alert('expanded');
+    });
+
+    object.trigger('expand');
+
+
+    // 或者
+
+     function Dog() {
+        }
+        Events.mixTo(Dog);
+
+        Dog.prototype.sleep = function() {
+            this.trigger('sleep');
+        };
+
+        var dog = new Dog();
+        dog.on('sleep', function() {
+            alert('狗狗睡得好香呀');
+        });
+
+        dog.sleep();
+    });
+
+  </script>
+</html>

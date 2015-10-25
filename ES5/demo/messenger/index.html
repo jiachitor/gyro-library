@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge, chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no" />
+  <title>messenger</title>
+  <link rel="stylesheet" href="./css/app.css"></head>
+
+<body>
+  <article class="hentry">
+    <h1 class="entry-title">跨域 Iframe 通信演示</h1>
+    <div class="entry-content">
+      <h2 id="演示">
+        演示
+        <a href="#演示" class="anchor">¶</a>
+      </h2>
+      <p>
+        我是父页面
+        <script>document.write('(' + location.protocol + '//' + location.host + ')');</script>
+      </p>
+
+      <p>
+        <input id="message">
+        <input type="button" value="发送给子页面" id="send"></p>
+
+      <pre id="output">来自子页面的消息:</pre>
+
+      <div class="nico-iframe">
+        <iframe src="iframe-index-1.html" allowtransparency="true" 
+frameborder="0" scrolling="0" ></iframe>
+      </div>
+      <script src="../../src/plug-in/messanger.js"></script>
+      <script>
+        var Messenger = require('arale-messenger');
+
+        var messenger = new Messenger('parent', 'demo');
+        messenger.addTarget($('iframe')[0].contentWindow, 'iframe1');
+
+        // 通过点击按钮发送消息
+        var send = document.getElementById('send');
+        var message = document.getElementById('message');
+        var output = document.getElementById('output');
+        send.onclick = function() {
+            console.log('发出', message.val());
+            messenger.targets['iframe1'].send(message.val());
+            message.val('');
+        };
+
+        // 监听消息
+        messenger.listen(function(msg) {
+            output.html(output.html() + ' ' + msg);
+        });
+
+      </script>
+</body>
+
+</html>
