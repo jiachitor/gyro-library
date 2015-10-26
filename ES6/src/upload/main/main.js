@@ -65,8 +65,28 @@ function curStyle(elem) {
   };
 };
 
+function offsetTop(elements) {
+  var top = elements.offsetTop;
+  var parent = elements.offsetParent;
+  while (parent != null) {
+    top += parent.offsetTop;
+    parent = parent.offsetParent;
+  };
+  return top;
+};
+
+function offsetLeft(elements) {
+  var left = elements.offsetLeft;
+  var parent = elements.offsetParent; 
+  while (parent != null) {
+    left += parent.offsetLeft;
+    parent = parent.offsetParent;
+  };
+  return left;
+};
+
 function setStyle(elems, style, value) {
-  if (!elems.length) {
+  if (!elems.length) {  
     elems = [elems];
   };
   if (typeof style == "string") {
@@ -80,7 +100,7 @@ function setStyle(elems, style, value) {
       function(all, letter) {
         return letter.toUpperCase();
       });
-  };
+  }; 
   each(elems,
     function(elem) {
       for (var name in style) {
@@ -90,7 +110,7 @@ function setStyle(elems, style, value) {
         } else if (name == "float") {
           elem.style[Browser.ie ? "styleFloat" : "cssFloat"] = value;
         } else {
-          elem.style[camelize(name)] = value;
+          elem.style[camelize(name)] = value; 
         };
       };
     });
@@ -203,6 +223,7 @@ function Uploader(options) {
 // initialize
 // create input, form, iframe
 Uploader.prototype.setup = function() {
+  var self = this;
   var timestamp = (new Date()).valueOf();
   this.id = "upload_" + timestamp;
   this.form = document.createElement('form');
@@ -222,13 +243,13 @@ Uploader.prototype.setup = function() {
 
   this.form.innerHTML = createInputs(data);
   if (window.FormData) {
-    this.form.innerHTML = createInputs({
+    this.form.appendChild(createInputs({
       '_uploader_': 'formdata'
-    });
+    })[0]);
   } else {
-    this.form.innerHTML = createInputs({
+    this.form.appendChild(createInputs({
       '_uploader_': 'iframe'
-    });
+    })[0]);
   }
 
   var input = document.createElement('input');
@@ -247,29 +268,30 @@ Uploader.prototype.setup = function() {
   var triggerCss = curStyle($trigger);
   this.outerWidth = parseInt(triggerCss.width) + parseInt(triggerCss.paddingLeft) + parseInt(triggerCss.paddingRight) + parseInt(triggerCss.borderLeftWidth) + parseInt(triggerCss.borderRightWidth) + parseInt(triggerCss.marginLeft) + parseInt(triggerCss.marginRight);
   this.outerHeight = parseInt(triggerCss.height) + parseInt(triggerCss.paddingTop) + parseInt(triggerCss.paddingBottom) + parseInt(triggerCss.borderTopWidth) + parseInt(triggerCss.borderBottomWidth) + parseInt(triggerCss.marginTop) + parseInt(triggerCss.marginBottom);
-  console.log(this.outerWidth)
-  console.log(this.outerHeight)
+
   this.input.setAttribute('hidefocus', true);
+
   setStyle(this.input, {
     position: 'absolute',
-    top: 0,
-    right: 0,
-    opacity: 0,
-    outline: 0,
+    top: "0px",
+    right: "0px",
+    opacity: "0px",
+    outline: "0px",
     cursor: 'pointer',
-    height: this.outerHeight,
-    fontSize: Math.max(64, $trigger.outerHeight * 5)
+    height: self.outerHeight + "px",
+    fontSize: Math.max(64, self.outerHeight * 5)
   });
 
-  this.form.innerHTML = this.input;
+  this.form.appendChild(this.input);
+
   setStyle(this.form, {
     position: 'absolute',
-    top: parseInt(triggerCss.offsetTop),
-    left: parseInt(triggerCss.offsetLeft),
+    top: parseInt(offsetTop($trigger)) + "px",
+    left: parseInt(offsetLeft($trigger)) + "px",
     overflow: 'hidden',
-    width: this.outerWidth,
-    height: this.outerHeight,
-    zIndex: $trigger.style.zIndex + 100
+    width: self.outerWidth + "px",
+    height: self.outerHeight + "px",
+    zIndex: $trigger.style.zIndex + 100 
   });
 
   return this;
@@ -282,11 +304,11 @@ Uploader.prototype.bind = function() {
   mouseEnter($trigger,
     function() {
       setStyle(self.form, {
-        top: $trigger.style.offsetTop,
-        left: $trigger.style.offsetLeft,
+        top: $trigger.style.offsetTop  + "px",
+        left: $trigger.style.offsetLeft  + "px",
         overflow: 'hidden',
-        width: self.outerWidth,
-        height: self.outerHeight
+        width: self.outerWidth  + "px",
+        height: self.outerHeight  + "px"
       });
     });
   self.bindInput();
@@ -294,19 +316,19 @@ Uploader.prototype.bind = function() {
 
 Uploader.prototype.bindInput = function() {
   var self = this;
-  self.input.onchange = function(e) {
+  addEventListener(self.input,"change",function(e) { 
     // ie9 don't support FileList Object
     // http://stackoverflow.com/questions/12830058/ie8-input-type-file-get-files
     self._files = this.files || [{
       name: e.target.value
     }];
-    var file = self.input.val();
+    var file = self.input.value;
     if (self.settings.change) {
       self.settings.change.call(self, self._files);
     } else if (file) {
       return self.submit();
     }
-  };
+  });
 };
 
 // handle submit event
@@ -315,7 +337,8 @@ Uploader.prototype.submit = function() {
   var self = this;
   if (window.FormData && self._files) {
     // build a FormData
-    var form = new FormData(self.form.get(0));
+    var form = new FormData(self.form);
+    console.log(form)
     // use FormData to upload
     form.append(self.settings.name, self._files);
 
@@ -367,7 +390,7 @@ Uploader.prototype.submit = function() {
       try {
         response = $(this).contents().find("body").html();
       } catch (e) {
-        response = "cross-domain";
+        response = "cross-domain"
       }
       $(this).remove();
       if (!response) {
@@ -387,9 +410,9 @@ Uploader.prototype.submit = function() {
 
 Uploader.prototype.refreshInput = function() {
   //replace the input element, or the same file can not to be uploaded
-  var newInput = this.input.clone();
-  this.input.before(newInput);
-  this.input.off('change');
+  var newInput = this.input.cloneNode(true);;
+  this.input.insertBefore(newInput,null);
+  removeEventListener(this.input,'change');
   this.input.remove();
   this.input = newInput;
   this.bindInput();
@@ -453,8 +476,9 @@ function createInputs(data) {
   if (!data) return [];
 
   var inputs = [],
-    i;
+    i, html = '';
   for (var name in data) {
+    //html += '<input type="hidden" name="' + name + '" value="' + data[name] + '" />';
     i = document.createElement('input');
     i.type = 'hidden';
     i.name = name;
