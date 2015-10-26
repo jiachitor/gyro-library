@@ -25,7 +25,7 @@ import $ from 'jquery';
       trigger: '#uploader-2',
       action: '/'
     }).change(function(filename) {
-      document.getElementById('upload-2-text').innerText = filename;
+      document.getElementById('upload-2-text').innerHTML = filename.replace(/<.+?>/gim,'');
     }).success(function(data) {
       alert(data);
     });
@@ -47,7 +47,7 @@ import $ from 'jquery';
       trigger: '#uploader-4',
       action: '/'
     }).change(function(filename) {
-      document.getElementById('upload-4-text').innerText = filename;
+      document.getElementById('upload-4-text').innerHTML = filename.replace(/<.+?>/gim,'');
     }).success(function(data) {
       alert(data);
     });

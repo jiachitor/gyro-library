@@ -1,27 +1,176 @@
 var iframeCount = 0;
 var $ = require('jquery');
 
-function extend (object) {
-    // Takes an unlimited number of extenders.
-    var args = Array.prototype.slice.call(arguments, 1);
+/*获取浏览器信息*/
+var Browser = (function(ua) {
+  var b = {
+    msie: /msie/.test(ua) && !/opera/.test(ua),
+    opera: /opera/.test(ua),
+    safari: /webkit/.test(ua) && !/chrome/.test(ua),
+    firefox: /firefox/.test(ua),
+    chrome: /chrome/.test(ua)
+  };
+  var vMark = "";
+  for (var i in b) {
+    if (b[i]) {
+      vMark = "safari" == i ? "version" : i;
+      break;
+    };
+  };
+  b.version = vMark && RegExp("(?:" + vMark + ")[\\/: ]([\\d.]+)").test(ua) ? RegExp.$1 : "0";
+  b.ie = b.msie;
+  b.ie6 = b.msie && parseInt(b.version, 10) == 6;
+  b.ie7 = b.msie && parseInt(b.version, 10) == 7;
+  b.ie8 = b.msie && parseInt(b.version, 10) == 8;
+  b.ie9 = b.msie && parseInt(b.version, 10) == 9;
+  b.ie10 = b.msie && parseInt(b.version, 10) == 10;
+  return b;
+})(window.navigator.userAgent.toLowerCase());
 
-    // For each extender, copy their properties on our object.
-    for (var i = 0, source; source = args[i]; i++) {
-        if (!source) continue;
-        for (var property in source) {
-            object[property] = source[property];
-        }
+function extend(object) {
+  // Takes an unlimited number of extenders.
+  var args = Array.prototype.slice.call(arguments, 1);
+
+  // For each extender, copy their properties on our object.
+  for (var i = 0, source; source = args[i]; i++) {
+    if (!source) continue;
+    for (var property in source) {
+      object[property] = source[property];
     }
+  }
 
-    return object;
+  return object;
 };
+
+function each(object, callback) {
+  if (undefined === object.length) {
+    for (var name in object) {
+      if (false === callback(object[name], name, object)) break;
+    }
+  } else {
+    for (var i = 0, len = object.length; i < len; i++) {
+      if (i in object) {
+        if (false === callback(object[i], i, object)) break;
+      }
+    }
+  };
+};
+
+//curStyle是用来获取元素的最终样式表的
+function curStyle(elem) {
+  if (document.defaultView && document.defaultView.getComputedStyle) {
+    return document.defaultView.getComputedStyle(elem, null); //这是w3c标准方法，取得元素的样式信息，因为有些样式是在外部css文件定义的，所以用elem.style是取不到的
+  } else {
+    return elem.currentStyle; //如果是ie,可以用 elem.currentStyle["name"]
+  };
+};
+
+function setStyle(elems, style, value) {
+  if (!elems.length) {
+    elems = [elems];
+  };
+  if (typeof style == "string") {
+    var s = style;
+    style = {};
+    style[s] = value;
+  };
+
+  function camelize(s) {
+    return s.replace(/-([a-z])/ig,
+      function(all, letter) {
+        return letter.toUpperCase();
+      });
+  };
+  each(elems,
+    function(elem) {
+      for (var name in style) {
+        var value = style[name];
+        if (name == "opacity" && Browser.ie) {
+          elem.style.filter = (elem.currentStyle && elem.currentStyle.filter || "").replace(/alpha\([^)]*\)/, "") + " alpha(opacity=" + (value * 100 | 0) + ")";
+        } else if (name == "float") {
+          elem.style[Browser.ie ? "styleFloat" : "cssFloat"] = value;
+        } else {
+          elem.style[camelize(name)] = value;
+        };
+      };
+    });
+};
+
+function addEventListener(oTarget, sEventType, fnHandler) {
+  if (oTarget.addEventListener) {
+    oTarget.addEventListener(sEventType, fnHandler, false);
+  } else if (oTarget.attachEvent) {
+    oTarget.attachEvent("on" + sEventType, fnHandler);
+  } else {
+    oTarget["on" + sEventType] = fnHandler;
+  };
+};
+
+function removeEventListener(oTarget, sEventType, fnHandler) {
+  if (oTarget.removeEventListener) {
+    oTarget.removeEventListener(sEventType, fnHandler, false);
+  } else if (oTarget.detachEvent) {
+    oTarget.detachEvent("on" + sEventType, fnHandler);
+  } else {
+    oTarget["on" + sEventType] = null;
+  };
+};
+
+function contains(root, elem) {
+  if (!root && !elem) {
+    return false;
+  };
+  if (root.compareDocumentPosition) return root === elem || !!(root.compareDocumentPosition(elem) & 16);
+  if (root.contains && elem.nodeType === 1) {
+    return root.contains(elem) && root !== elem;
+  };
+  while ((elem = elem.parentNode))
+    if (elem === root) return true;
+  return false;
+};
+
+function fixedMouse(e, that) { //that 为触发该事件传递下来的this指针
+  var related, type = e.type.toLowerCase(); //这里获取事件名字
+  if (type == 'mouseover') {
+    related = e.relatedTarget || e.fromElement; //移入目标元素
+  } else if (type = 'mouseout') {
+    related = e.relatedTarget || e.toElement; //移出目标元素
+  } else return true;
+  var contain = contains(that, related);
+  return 'document' && related && related.prefix != 'xul' && !contain && related !== that;
+};
+
+function mouseEnter(element, callback) {
+  addEventListener(element, "mouseover",
+    function(e) {
+      var that = this;
+      if (fixedMouse(e, that)) {
+        callback.call(); //封装回调函数
+      };
+    },
+    false);
+};
+
+function mouseLeave(element, callback) {
+  addEventListener(element, "mouseout",
+    function(e) {
+      var that = this;
+      if (fixedMouse(e, that)) {
+        callback.call(); //封装回调函数
+      };
+    },
+    false);
+};
+
 
 function Uploader(options) {
   if (!(this instanceof Uploader)) {
     return new Uploader(options);
   }
   if (isString(options)) {
-    options = {trigger: options};  
+    options = {
+      trigger: options
+    };
   }
 
   var settings = {
@@ -54,21 +203,32 @@ function Uploader(options) {
 // initialize
 // create input, form, iframe
 Uploader.prototype.setup = function() {
-  this.form = $(
-    '<form method="post" enctype="multipart/form-data"'
-    + 'target="" action="' + this.settings.action + '" />'
-  );
+  var timestamp = (new Date()).valueOf();
+  this.id = "upload_" + timestamp;
+  this.form = document.createElement('form');
+  this.form.id = this.id;
+  this.form.action = this.settings.action;
+  this.form.method = "post";
+  this.form.enctype = "multipart/form-data";
+  this.form.target = "";
+  document.body.appendChild(this.form);
 
   this.iframe = newIframe();
   //setAttribute
-  this.form.attr('target', this.iframe.attr('name'));
+  this.form.setAttribute('target', this.iframe.getAttribute('name'));
+  //var $uploadForm = document.getElementById(form_id);
 
   var data = this.settings.data;
-  this.form.append(createInputs(data));
+
+  this.form.innerHTML = createInputs(data);
   if (window.FormData) {
-    this.form.append(createInputs({'_uploader_': 'formdata'}));
+    this.form.innerHTML = createInputs({
+      '_uploader_': 'formdata'
+    });
   } else {
-    this.form.append(createInputs({'_uploader_': 'iframe'}));
+    this.form.innerHTML = createInputs({
+      '_uploader_': 'iframe'
+    });
   }
 
   var input = document.createElement('input');
@@ -81,50 +241,60 @@ Uploader.prototype.setup = function() {
     input.multiple = true;
     input.setAttribute('multiple', 'multiple');
   }
-  this.input = $(input);
+  this.input = input;
 
-  var $trigger = $(this.settings.trigger);
-  this.input.attr('hidefocus', true).css({
+  var $trigger = this.settings.trigger;
+  var triggerCss = curStyle($trigger);
+  this.outerWidth = parseInt(triggerCss.width) + parseInt(triggerCss.paddingLeft) + parseInt(triggerCss.paddingRight) + parseInt(triggerCss.borderLeftWidth) + parseInt(triggerCss.borderRightWidth) + parseInt(triggerCss.marginLeft) + parseInt(triggerCss.marginRight);
+  this.outerHeight = parseInt(triggerCss.height) + parseInt(triggerCss.paddingTop) + parseInt(triggerCss.paddingBottom) + parseInt(triggerCss.borderTopWidth) + parseInt(triggerCss.borderBottomWidth) + parseInt(triggerCss.marginTop) + parseInt(triggerCss.marginBottom);
+  console.log(this.outerWidth)
+  console.log(this.outerHeight)
+  this.input.setAttribute('hidefocus', true);
+  setStyle(this.input, {
     position: 'absolute',
     top: 0,
     right: 0,
     opacity: 0,
     outline: 0,
     cursor: 'pointer',
-    height: $trigger.outerHeight(),
-    fontSize: Math.max(64, $trigger.outerHeight() * 5)
+    height: this.outerHeight,
+    fontSize: Math.max(64, $trigger.outerHeight * 5)
   });
-  this.form.append(this.input);
-  this.form.css({
+
+  this.form.innerHTML = this.input;
+  setStyle(this.form, {
     position: 'absolute',
-    top: $trigger.offset().top,
-    left: $trigger.offset().left,
+    top: parseInt(triggerCss.offsetTop),
+    left: parseInt(triggerCss.offsetLeft),
     overflow: 'hidden',
-    width: $trigger.outerWidth(),
-    height: $trigger.outerHeight(),
-    zIndex: findzIndex($trigger) + 10
-  }).appendTo('body');
+    width: this.outerWidth,
+    height: this.outerHeight,
+    zIndex: $trigger.style.zIndex + 100
+  });
+
   return this;
 };
 
 // bind events
 Uploader.prototype.bind = function() {
   var self = this;
-  var $trigger = $(self.settings.trigger);
-  $trigger.mouseenter(function() {
-    self.form.css({
-      top: $trigger.offset().top,
-      left: $trigger.offset().left,
-      width: $trigger.outerWidth(),
-      height: $trigger.outerHeight()
+  var $trigger = self.settings.trigger;
+  mouseEnter($trigger,
+    function() {
+      setStyle(self.form, {
+        top: $trigger.style.offsetTop,
+        left: $trigger.style.offsetLeft,
+        overflow: 'hidden',
+        width: self.outerWidth,
+        height: self.outerHeight
+      });
     });
-  });
   self.bindInput();
 };
 
 Uploader.prototype.bindInput = function() {
   var self = this;
-  self.input.change(function(e) {
+  self.input.onchange = function(e) {
     // ie9 don't support FileList Object
     // http://stackoverflow.com/questions/12830058/ie8-input-type-file-get-files
     self._files = this.files || [{
@@ -136,7 +306,7 @@ Uploader.prototype.bindInput = function() {
     } else if (file) {
       return self.submit();
     }
-  });
+  };
 };
 
 // handle submit event
@@ -161,7 +331,7 @@ Uploader.prototype.submit = function() {
             var position = event.loaded || event.position; /*event.position is deprecated*/
             var total = event.total;
             if (event.lengthComputable) {
-                percent = Math.ceil(position / total * 100);
+              percent = Math.ceil(position / total * 100);
             }
             self.settings.progress(event, position, total, percent, files);
           }, false);
@@ -261,13 +431,13 @@ Uploader.prototype.error = function(callback) {
 };
 
 // enable
-Uploader.prototype.enable = function(){
+Uploader.prototype.enable = function() {
   this.input.prop('disabled', false);
   this.input.css('cursor', 'pointer');
 };
 
 // disable
-Uploader.prototype.disable = function(){
+Uploader.prototype.disable = function() {
   this.input.prop('disabled', true);
   this.input.css('cursor', 'not-allowed');
 };
@@ -282,7 +452,8 @@ function isString(val) {
 function createInputs(data) {
   if (!data) return [];
 
-  var inputs = [], i;
+  var inputs = [],
+    i;
   for (var name in data) {
     i = document.createElement('input');
     i.type = 'hidden';
@@ -326,7 +497,9 @@ function findzIndex($node) {
 
 function newIframe() {
   var iframeName = 'iframe-uploader-' + iframeCount;
-  var iframe = $('<iframe name="' + iframeName + '" />').hide();
+  var iframe = document.createElement("iframe");
+  iframe.name = iframeName;
+  iframe.style.display = "none";
   iframeCount += 1;
   return iframe;
 }
@@ -337,7 +510,9 @@ function MultipleUploader(options) {
   }
 
   if (isString(options)) {
-    options = {trigger: options};
+    options = {
+      trigger: options
+    };
   }
   var $trigger = $(options.trigger);
 
@@ -372,14 +547,14 @@ MultipleUploader.prototype.error = function(callback) {
   });
   return this;
 };
-MultipleUploader.prototype.enable = function (){
-  $.each(this._uploaders, function (i, item){
+MultipleUploader.prototype.enable = function() {
+  $.each(this._uploaders, function(i, item) {
     item.enable();
   });
   return this;
 };
-MultipleUploader.prototype.disable = function (){
-  $.each(this._uploaders, function (i, item){
+MultipleUploader.prototype.disable = function() {
+  $.each(this._uploaders, function(i, item) {
     item.disable();
   });
   return this;
