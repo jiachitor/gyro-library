@@ -1,5 +1,4 @@
 import Uploader from '../../../src/upload/index.js';
-import $ from 'jquery';
 
 (function() {
   let ready = function(fn) {  
@@ -12,7 +11,7 @@ import $ from 'jquery';
   };
   ready(function() {
     new Uploader({
-      trigger: '#uploader-1',
+      trigger: 'uploader-1',
       action: '/',
       progress: function() {
         console.log(arguments);
@@ -22,7 +21,7 @@ import $ from 'jquery';
     });
 
     var uploader = new Uploader({
-      trigger: '#uploader-2',
+      trigger: 'uploader-2',
       action: '/'
     }).change(function(filename) {
       console.log(filename)
@@ -37,7 +36,7 @@ import $ from 'jquery';
     };
 
     new Uploader({
-      trigger: '#uploader-3',
+      trigger: 'uploader-3',
       accept: 'image/*',
       action: '/'
     }).success(function(data) {
@@ -45,7 +44,7 @@ import $ from 'jquery';
     });
 
     var uploaderCanBeDisabled = new Uploader({
-      trigger: '#uploader-4',
+      trigger: 'uploader-4',
       action: '/'
     }).change(function(filename) {
       document.getElementById('upload-4-text').innerHTML = filename[0].name.replace(/<.+?>/gim,'');
@@ -63,6 +62,6 @@ import $ from 'jquery';
       uploaderCanBeDisabled.submit();  
       return false;
     };
-
   }, false);
+
 })();

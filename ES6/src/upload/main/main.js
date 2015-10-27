@@ -1,5 +1,4 @@
 var iframeCount = 0;
-var $ = require('jquery');
 
 /*获取浏览器信息*/
 var Browser = (function(ua) {
@@ -77,7 +76,7 @@ function offsetTop(elements) {
 
 function offsetLeft(elements) {
   var left = elements.offsetLeft;
-  var parent = elements.offsetParent; 
+  var parent = elements.offsetParent;
   while (parent != null) {
     left += parent.offsetLeft;
     parent = parent.offsetParent;
@@ -86,7 +85,7 @@ function offsetLeft(elements) {
 };
 
 function setStyle(elems, style, value) {
-  if (!elems.length) {  
+  if (!elems.length) {
     elems = [elems];
   };
   if (typeof style == "string") {
@@ -100,7 +99,7 @@ function setStyle(elems, style, value) {
       function(all, letter) {
         return letter.toUpperCase();
       });
-  }; 
+  };
   each(elems,
     function(elem) {
       for (var name in style) {
@@ -110,7 +109,7 @@ function setStyle(elems, style, value) {
         } else if (name == "float") {
           elem.style[Browser.ie ? "styleFloat" : "cssFloat"] = value;
         } else {
-          elem.style[camelize(name)] = value; 
+          elem.style[camelize(name)] = value;
         };
       };
     });
@@ -130,7 +129,11 @@ function removeEventListener(oTarget, sEventType, fnHandler) {
   if (oTarget.removeEventListener) {
     oTarget.removeEventListener(sEventType, fnHandler, false);
   } else if (oTarget.detachEvent) {
-    oTarget.detachEvent("on" + sEventType, fnHandler);
+    if (fnHandler) {
+      oTarget.detachEvent("on" + sEventType, fnHandler);
+    } else {
+      oTarget.detachEvent("on" + sEventType);
+    }
   } else {
     oTarget["on" + sEventType] = null;
   };
@@ -183,6 +186,96 @@ function mouseLeave(element, callback) {
 };
 
 
+// 创建完整Ajax程序包 ，该包不支持跨域
+function ajax(options) {
+  options = {
+    type: options.type || "GET",
+    dataType: options.dataType || "json",
+    url: options.url || "",
+    xhr: options.xhr || function() {
+      try {
+        return new XMLHttpRequest();
+      } catch (e) {}
+    },
+    data: options.data || "",
+    timeout: options.timeout || 5000,
+    onComplete: options.onComplete || function() {},
+    onError: options.onError || function() {},
+    onSuccess: options.onSuccess || function() {}
+  };
+
+  var xml = options.xhr();
+  xml.open(options.type, options.url, true);
+  var timeoutLength = options.timeout;
+
+  var requestDone = false;
+
+  // 初始化一个5秒后执行的回调函数,用于取消请求
+  setTimeout(function() {
+      requestDone = true;
+    },
+    timeoutLength);
+
+  // 监听文档更新状态
+  xml.onreadystatechange = function() {
+    // 保持等待 只到数据全部加载 且没有超时
+    if (xml.readyState == 4 && !requestDone) {
+      // 检查是否请求成功
+      if (httpSuccess(xml)) {
+        // 以服务器返回的数据作为参数执行成功回调函数
+        options.onSuccess(httpData(xml, options.dataType));
+      } else {
+        options.onError();
+      };
+
+      // 调用完成后的回调函数
+      options.onComplete();
+      // 避免内存泄露,清理文档
+      xml = null;
+    };
+  };
+
+  // 建立与服务器的链接
+  xml.send(options.data);
+
+  // 判断HTTP响应是否成功
+  function httpSuccess(r) {
+    try {
+      // 如果得不到服务器状态,且我们正在请求本地文件,则认为成功
+      return !r.status && location.protocol == "file:" ||
+        // 所有200-300之间的状态码 表示成功
+        (r.status >= 200 && r.status <= 300) ||
+        // 文档未修改也算成功
+        r.status == 304 ||
+        // Safari在文档未修改的时候返回空状态
+        navigator.userAgent.indexOf('Safari') >= 0 && typeof r.status == "undefined";
+    } catch (e) {};
+
+    // 若检查状态失败,则假定请求是失败的
+    return false;
+  };
+
+  // 从HTTP响应中解析正确数据
+  function httpData(r, type) {
+    // 获取content-type的头部
+    var ct = r.getResponseHeader("content-type");
+    // 如果没有提供默认类型, 判断服务器返回的是否是XML形式
+    var data = !type && ct && ct.indexOf('xml') >= 0;
+
+    // 如果是XML则获得XML对象 否则返回文本内容
+    data = type == "xml" || data ? r.responseXML : r.responseText;
+
+    // 如果指定类型是script,则以javascript形式执行返回文本
+    if (type == "script") {
+      eval.call(window, data);
+    };
+
+    // 返回响应数据
+    return data;
+  };
+};
+
+
 function Uploader(options) {
   if (!(this instanceof Uploader)) {
     return new Uploader(options);
@@ -209,11 +302,17 @@ function Uploader(options) {
   }
   var $trigger = settings.trigger;
 
-  settings.action = settings.action || $trigger.dataset.action || '/upload';
-  settings.name = settings.name || $trigger.getAttribute('name') || $trigger.dataset.name || 'file';
-  settings.data = settings.data || parse($trigger.dataset.data);
-  settings.accept = settings.accept || $trigger.dataset.accept;
-  settings.success = settings.success || $trigger.dataset.success;
+  // settings.action = settings.action || $trigger.dataset.action || '/upload';
+  // settings.name = settings.name || $trigger.getAttribute('name') || $trigger.dataset.name || 'file';
+  // settings.data = settings.data || parse($trigger.dataset.data);
+  // settings.accept = settings.accept || $trigger.dataset.accept;
+  // settings.success = settings.success || $trigger.dataset.success;
+
+  settings.action = settings.action || '/upload';
+  settings.name = settings.name || $trigger.getAttribute('name') || 'file';
+  settings.data = settings.data;
+  settings.accept = settings.accept;
+  settings.success = settings.success;
   this.settings = settings;
 
   this.setup();
@@ -266,6 +365,7 @@ Uploader.prototype.setup = function() {
 
   var $trigger = this.settings.trigger;
   var triggerCss = curStyle($trigger);
+
   this.outerWidth = parseInt(triggerCss.width) + parseInt(triggerCss.paddingLeft) + parseInt(triggerCss.paddingRight) + parseInt(triggerCss.borderLeftWidth) + parseInt(triggerCss.borderRightWidth) + parseInt(triggerCss.marginLeft) + parseInt(triggerCss.marginRight);
   this.outerHeight = parseInt(triggerCss.height) + parseInt(triggerCss.paddingTop) + parseInt(triggerCss.paddingBottom) + parseInt(triggerCss.borderTopWidth) + parseInt(triggerCss.borderBottomWidth) + parseInt(triggerCss.marginTop) + parseInt(triggerCss.marginBottom);
 
@@ -275,11 +375,10 @@ Uploader.prototype.setup = function() {
     position: 'absolute',
     top: "0px",
     right: "0px",
-    opacity: "0px",
+    opacity: 0,
     outline: "0px",
     cursor: 'pointer',
-    height: self.outerHeight + "px",
-    fontSize: Math.max(64, self.outerHeight * 5)
+    height: self.outerHeight + "px"
   });
 
   this.form.appendChild(this.input);
@@ -291,7 +390,7 @@ Uploader.prototype.setup = function() {
     overflow: 'hidden',
     width: self.outerWidth + "px",
     height: self.outerHeight + "px",
-    zIndex: $trigger.style.zIndex + 100 
+    zIndex: $trigger.style.zIndex + 100
   });
 
   return this;
@@ -304,11 +403,11 @@ Uploader.prototype.bind = function() {
   mouseEnter($trigger,
     function() {
       setStyle(self.form, {
-        top: $trigger.style.offsetTop  + "px",
-        left: $trigger.style.offsetLeft  + "px",
+        top: $trigger.style.offsetTop + "px",
+        left: $trigger.style.offsetLeft + "px",
         overflow: 'hidden',
-        width: self.outerWidth  + "px",
-        height: self.outerHeight  + "px"
+        width: self.outerWidth + "px",
+        height: self.outerHeight + "px"
       });
     });
   self.bindInput();
@@ -316,11 +415,11 @@ Uploader.prototype.bind = function() {
 
 Uploader.prototype.bindInput = function() {
   var self = this;
-  addEventListener(self.input,"change",function(e) { 
+  addEventListener(this.input, "change", function(e) {
     // ie9 don't support FileList Object
     // http://stackoverflow.com/questions/12830058/ie8-input-type-file-get-files
     self._files = this.files || [{
-      name: e.target.value
+      name: e.target ? e.target.value : e.srcElement.value
     }];
     var file = self.input.value;
     if (self.settings.change) {
@@ -338,82 +437,112 @@ Uploader.prototype.submit = function() {
   if (window.FormData && self._files) {
     // build a FormData
     var form = new FormData(self.form);
-    console.log(form)
     // use FormData to upload
     form.append(self.settings.name, self._files);
 
     var optionXhr;
+
     if (self.settings.progress) {
       // fix the progress target file
       var files = self._files;
       optionXhr = function() {
-        var xhr = $.ajaxSettings.xhr();
-        if (xhr.upload) {
-          xhr.upload.addEventListener('progress', function(event) {
-            var percent = 0;
-            var position = event.loaded || event.position; /*event.position is deprecated*/
-            var total = event.total;
-            if (event.lengthComputable) {
-              percent = Math.ceil(position / total * 100);
-            }
-            self.settings.progress(event, position, total, percent, files);
-          }, false);
+
+        function updateProgress(event) {
+          // event.total是需要传输的总字节, event.loaded是已经传输的字节.
+          // 如果event.lengthComputable不为真，则event.total等于0
+          var percent = 0;
+          var position = event.loaded || event.position; /*event.position is deprecated*/
+          var total = event.total;
+          if (event.lengthComputable) {
+            percent = Math.ceil(position / total * 100);
+          }
+          self.settings.progress(event, position, total, percent, files);
         }
+
+        function uploadComplete(event) {
+          console.log("uploadComplete");
+        }
+
+        function uploadFailed(event) {
+          console.log("uploadFailed");
+        }
+
+        function uploadCanceled(event) {
+          console.log("uploadCanceled");
+        }
+
+        var xhr = new XMLHttpRequest();
+
+        // 定义progress事件的回调函数
+        if (xhr.upload) {
+          //进度条     
+          addEventListener(xhr.upload, "progress", updateProgress);
+          //下载            
+          //xhr.addEventListener("load", uploadComplete, false);
+          //错误信息            
+          //xhr.addEventListener("error", uploadFailed, false);
+          //取消    
+          //xhr.addEventListener("abort", uploadCanceled, false);
+        }
+
         return xhr;
       };
     }
-    $.ajax({
-      url: self.settings.action,
+
+    ajax({
       type: 'post',
-      processData: false,
-      contentType: false,
-      data: form,
+      url: self.settings.action,
+      timeout: 2000,
       xhr: optionXhr,
-      context: this,
-      success: self.settings.success,
-      error: self.settings.error
+      onError: self.settings.error,
+      onSuccess: self.settings.success,
+      data: form
     });
     return this;
   } else {
     // iframe upload
     self.iframe = newIframe();
-    self.form.attr('target', self.iframe.attr('name'));
-    $('body').append(self.iframe);
-    self.iframe.one('load', function() {
-      // https://github.com/blueimp/jQuery-File-Upload/blob/9.5.6/js/jquery.iframe-transport.js#L102
-      // Fix for IE endless progress bar activity bug
-      // (happens on form submits to iframe targets):
-      $('<iframe src="javascript:false;"></iframe>')
-        .appendTo(self.form)
-        .remove();
-      var response;
-      try {
-        response = $(this).contents().find("body").html();
-      } catch (e) {
-        response = "cross-domain"
-      }
-      $(this).remove();
-      if (!response) {
-        if (self.settings.error) {
-          self.settings.error(self.input.val());
+    self.form.setAttribute('target', self.iframe.getAttribute('name'));
+    document.body.appendChild(this.iframe);
+
+    self.iframe.onreadystatechange = function() {
+      if (self.iframe.readyState == "complete") {
+        console.log(self.form.target)
+        var test_iframe = document.createElement("iframe");
+        test_iframe.src = "javascript:false;";
+        test_iframe.style.display = "none";
+        self.form.appendChild(test_iframe);
+        //test_iframe = null;
+        var response;
+        try {
+          response = self.iframe.contentWindow.document.body.innerHTML;
+        } catch (e) {
+          response = "cross-domain"
         }
-      } else {
-        if (self.settings.success) {
-          self.settings.success(response);
+        //this = null;
+        if (!response) {
+          if (self.settings.error) {
+            self.settings.error(self.input.value);
+          }
+        } else {
+          if (self.settings.success) {
+            self.settings.success(response);
+          }
         }
       }
-    });
+    };
     self.form.submit();
+
   }
   return this;
 };
 
 Uploader.prototype.refreshInput = function() {
   //replace the input element, or the same file can not to be uploaded
-  var newInput = this.input.cloneNode(true);;
-  this.input.insertBefore(newInput,null);
-  removeEventListener(this.input,'change');
-  this.input.remove();
+  var newInput = this.input.cloneNode(true);
+  this.input.parentNode.insertBefore(newInput, this.input.nextSibling);
+  removeEventListener(this.input, 'change');
+  this.input = null;
   this.input = newInput;
   this.bindInput();
 };
@@ -430,9 +559,10 @@ Uploader.prototype.change = function(callback) {
 
 // handle when upload success
 Uploader.prototype.success = function(callback) {
-  var me = this;
+  var self = this;
+  // response 就是返回的数据
   this.settings.success = function(response) {
-    me.refreshInput();
+    self.refreshInput();
     if (callback) {
       callback(response);
     }
@@ -441,7 +571,7 @@ Uploader.prototype.success = function(callback) {
   return this;
 };
 
-// handle when upload success
+// handle when upload error
 Uploader.prototype.error = function(callback) {
   var me = this;
   this.settings.error = function(response) {
@@ -455,14 +585,18 @@ Uploader.prototype.error = function(callback) {
 
 // enable
 Uploader.prototype.enable = function() {
-  this.input.prop('disabled', false);
-  this.input.css('cursor', 'pointer');
+  this.input.disabled = false;
+  setStyle(this.input, {
+    cursor: 'pointer'
+  });
 };
 
 // disable
 Uploader.prototype.disable = function() {
-  this.input.prop('disabled', true);
-  this.input.css('cursor', 'not-allowed');
+  this.input.disabled = true;
+  setStyle(this.input, {
+    cursor: 'not-allowed'
+  });
 };
 
 // Helpers
@@ -538,47 +672,45 @@ function MultipleUploader(options) {
       trigger: options
     };
   }
-  var $trigger = $(options.trigger);
+  var $trigger = options.trigger;
 
   var uploaders = [];
-  $trigger.each(function(i, item) {
-    options.trigger = item;
-    uploaders.push(new Uploader(options));
-  });
+  options.trigger = document.getElementById($trigger);
+  uploaders.push(new Uploader(options));
   this._uploaders = uploaders;
 }
 MultipleUploader.prototype.submit = function() {
-  $.each(this._uploaders, function(i, item) {
+  each(this._uploaders, function(item) {
     item.submit();
   });
   return this;
 };
 MultipleUploader.prototype.change = function(callback) {
-  $.each(this._uploaders, function(i, item) {
+  each(this._uploaders, function(item) {
     item.change(callback);
   });
   return this;
 };
 MultipleUploader.prototype.success = function(callback) {
-  $.each(this._uploaders, function(i, item) {
+  each(this._uploaders, function(item) {
     item.success(callback);
   });
   return this;
 };
 MultipleUploader.prototype.error = function(callback) {
-  $.each(this._uploaders, function(i, item) {
+  each(this._uploaders, function(item) {
     item.error(callback);
   });
   return this;
 };
 MultipleUploader.prototype.enable = function() {
-  $.each(this._uploaders, function(i, item) {
+  each(this._uploaders, function(item) {
     item.enable();
   });
   return this;
 };
 MultipleUploader.prototype.disable = function() {
-  $.each(this._uploaders, function(i, item) {
+  each(this._uploaders, function(item) {
     item.disable();
   });
   return this;

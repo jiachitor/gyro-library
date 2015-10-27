@@ -10,11 +10,11 @@ Browser = (function(ua) {
     var vMark = "";
     for (var i in b) {
         if (b[i]) {
-            vMark = "safari" == i ? "version": i;
+            vMark = "safari" == i ? "version" : i;
             break;
         };
     };
-    b.version = vMark && RegExp("(?:" + vMark + ")[\\/: ]([\\d.]+)").test(ua) ? RegExp.$1: "0";
+    b.version = vMark && RegExp("(?:" + vMark + ")[\\/: ]([\\d.]+)").test(ua) ? RegExp.$1 : "0";
     b.ie = b.msie;
     b.ie6 = b.msie && parseInt(b.version, 10) == 6;
     b.ie7 = b.msie && parseInt(b.version, 10) == 7;
@@ -28,9 +28,9 @@ Browser = (function(ua) {
 (function() {
     var lastTime = 0;
     var vendors = ['ms', 'moz', 'webkit', 'o'];
-    for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+    for (var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
         window.requestAnimationFrame = window[vendors[x] + 'RequestAnimationFrame'];
-        window.cancelAnimationFrame = window[vendors[x] + 'CancelAnimationFrame'] ||    // name has changed in Webkit
+        window.cancelAnimationFrame = window[vendors[x] + 'CancelAnimationFrame'] || // name has changed in Webkit
             window[vendors[x] + 'CancelRequestAnimationFrame'];
     };
     if (!window.requestAnimationFrame) {
@@ -55,7 +55,8 @@ var myReq = window.requestAnimationFrame(step);   //生成动画
 window.cancelAnimationFrame(myReq);        //取消动画
 */
 
-var jc = 1,animateID = {};
+var jc = 1,
+    animateID = {};
 
 var GLOBAL = GLOBAL || {};
 
@@ -169,7 +170,7 @@ GLOBAL.Objects.BindAsEventListener = function(object, fun) {
     var args = Array.prototype.slice.call(arguments).slice(2);
     //对于apply和call两者在作用上是相同的，但两者在参数上有区别的。 对于第一个参数意义都一样，但对第二个参数： apply传入的是一个参数数组，也就是将多个参数组合成为一个数组传入，而call则作为call的参数传入（从第二个参数开始）。 如 func.call(func1,var1,var2,var3)对应的apply写法为：func.apply(func1,[var1,var2,var3])
     return function(event) {
-        return fun.apply(object, [GLOBAL.Event.fixEvent(event)].concat(args));    //concat() 方法用于连接两个或多个数组。
+        return fun.apply(object, [GLOBAL.Event.fixEvent(event)].concat(args)); //concat() 方法用于连接两个或多个数组。
     };
 };
 /* 用法
@@ -240,15 +241,13 @@ GLOBAL.Dom.getElementsByAttribute = function(attribute, attributeValue) {
             if (pattern.test(elementArray[i].className)) {
                 matchedArray[matchedArray.length] = elementArray[i];
             }
-        }
-        else if (attribute == "for") {
+        } else if (attribute == "for") {
             if (elementArray[i].getAttribute("htmlFor") || elementArray[i].getAttribute("for")) {
                 if (elementArray[i].htmlFor == attributeValue) {
                     matchedArray[matchedArray.length] = elementArray[i];
                 }
             }
-        }
-        else if (elementArray[i].getAttribute(attribute) == attributeValue) {
+        } else if (elementArray[i].getAttribute(attribute) == attributeValue) {
             matchedArray[matchedArray.length] = elementArray[i];
         };
     };
@@ -278,8 +277,8 @@ GLOBAL.Dom.getChildren = function(elem, tagName) {
     };
     var a = [];
     var children = elem.childNodes;
-    if (tagName) {              //判断一下是不是传了第二个参数
-        if (typeof tagName != 'string') {         //判断第二个参数的类型是不是正确
+    if (tagName) { //判断一下是不是传了第二个参数
+        if (typeof tagName != 'string') { //判断第二个参数的类型是不是正确
             return;
         };
         for (var i = 0; i < children.length; i++) {
@@ -288,34 +287,34 @@ GLOBAL.Dom.getChildren = function(elem, tagName) {
                 a.push(children.item(i));
             }
         };
-    } else {    //没有传第二个参数，则这样做（既不用考虑标记名）
+    } else { //没有传第二个参数，则这样做（既不用考虑标记名）
         for (var i = 0; i < children.length; i++) {
             if (children.item(i).nodeType === 1) {
                 a.push(children.item(i))
             }
         };
     };
-    return a;     //最终返回的这个数值，就是elem的所有
+    return a; //最终返回的这个数值，就是elem的所有
 };
 
-GLOBAL.Dom.getSiblings = function(elem) {  //参数o就是想取谁的兄弟节点，就把那个元素传进去
-    var a = [];         //定义一个数组，用来存o的兄弟元素
+GLOBAL.Dom.getSiblings = function(elem) { //参数o就是想取谁的兄弟节点，就把那个元素传进去
+    var a = []; //定义一个数组，用来存o的兄弟元素
     var p = elem.previousSibling;
-    while (p) {      //先取o的哥哥们 判断有没有上一个哥哥元素，如果有则往下执行 p表示previousSibling
+    while (p) { //先取o的哥哥们 判断有没有上一个哥哥元素，如果有则往下执行 p表示previousSibling
         if (p.nodeType === 1) {
             a.push(p);
         };
-        p = p.previousSibling;    //最后把上一个节点赋给p
+        p = p.previousSibling; //最后把上一个节点赋给p
     };
-    a.reverse();      //把顺序反转一下 这样元素的顺序就是按先后的了
-    var n = elem.nextSibling;     //再取o的弟弟
-    while (n) {             //判断有没有下一个弟弟结点 n是nextSibling的意思
+    a.reverse(); //把顺序反转一下 这样元素的顺序就是按先后的了
+    var n = elem.nextSibling; //再取o的弟弟
+    while (n) { //判断有没有下一个弟弟结点 n是nextSibling的意思
         if (n.nodeType === 1) {
             a.push(n);
         };
         n = n.nextSibling;
     };
-    return a;             //最后按从老大到老小的顺序，把这一组元素返回
+    return a; //最后按从老大到老小的顺序，把这一组元素返回
 };
 
 GLOBAL.Dom.getFirstChild = function(elem) {
@@ -367,7 +366,7 @@ GLOBAL.Dom.hasClass = function(node, className) {
 };
 
 /*设置元素属性*/
-GLOBAL.Dom.attr = function (id, value) {
+GLOBAL.Dom.attr = function(id, value) {
     if (arguments.length == 1) {
         return this.getAttibute.value;
     } else if (arguments.length == 2) {
@@ -443,18 +442,18 @@ GLOBAL.Dom.getDocumentWidth = function() {
 
 //其中getScrollTop和getScrollLeft分别是获取文档滚动的scrollTop和scrollLeft。
 GLOBAL.Dom.getScrollTop = function(node) {
-    var doc = node ? node.ownerDocument: document;
+    var doc = node ? node.ownerDocument : document;
     return doc.documentElement.scrollTop || doc.body.scrollTop;
 };
 GLOBAL.Dom.getScrollLeft = function(node) {
-    var doc = node ? node.ownerDocument: document;
+    var doc = node ? node.ownerDocument : document;
     return doc.documentElement.scrollLeft || doc.body.scrollLeft;
 };
 
 //curStyle是用来获取元素的最终样式表的，根据支持情况返回getComputedStyle(w3c)或currentStyle(ie)。
 GLOBAL.Dom.curStyle = function(elem) {
     if (document.defaultView && document.defaultView.getComputedStyle) {
-        return document.defaultView.getComputedStyle(elem, null);  //这是w3c标准方法，取得元素的样式信息，因为有些样式是在外部css文件定义的，所以用elem.style是取不到的
+        return document.defaultView.getComputedStyle(elem, null); //这是w3c标准方法，取得元素的样式信息，因为有些样式是在外部css文件定义的，所以用elem.style是取不到的
     } else {
         return elem.currentStyle; //如果是ie,可以用 elem.currentStyle["name"]
     };
@@ -582,6 +581,7 @@ GLOBAL.Dom.setStyle = function(elems, style, value) {
         style = {};
         style[s] = value;
     };
+
     function camelize(s) {
         return s.replace(/-([a-z])/ig,
             function(all, letter) {
@@ -595,7 +595,7 @@ GLOBAL.Dom.setStyle = function(elems, style, value) {
                 if (name == "opacity" && Browser.ie) {
                     elem.style.filter = (elem.currentStyle && elem.currentStyle.filter || "").replace(/alpha\([^)]*\)/, "") + " alpha(opacity=" + (value * 100 | 0) + ")";
                 } else if (name == "float") {
-                    elem.style[Browser.ie ? "styleFloat": "cssFloat"] = value;
+                    elem.style[Browser.ie ? "styleFloat" : "cssFloat"] = value;
                 } else {
                     elem.style[camelize(name)] = value;
                 };
@@ -700,12 +700,12 @@ GLOBAL.Event.loadEvent = function(func) {
 
 /*阻止事件*/
 GLOBAL.Event.stopPropagation = function(e) {
-    if (e && e.stopPropagation && e.preventDefault) {      // 非IE
-        e.stopPropagation();      // 标准W3C的取消冒泡
-        e.preventDefault();       // 取消默认行为
+    if (e && e.stopPropagation && e.preventDefault) { // 非IE
+        e.stopPropagation(); // 标准W3C的取消冒泡
+        e.preventDefault(); // 取消默认行为
     } else {
-        window.event.cancelBubble = true;   // IE的取消冒泡方式
-        window.event.returnValue = false;    // IE的取消默认行为
+        window.event.cancelBubble = true; // IE的取消冒泡方式
+        window.event.returnValue = false; // IE的取消默认行为
     };
 };
 /*
@@ -719,7 +719,7 @@ GLOBAL.Event.stopPropagation = function(e) {
 /*取得事件源对象*/
 GLOBAL.Event.getEventTarget = function(event) {
     event = event || window.event;
-    var obj = event.srcElement ? event.srcElement: event.target;
+    var obj = event.srcElement ? event.srcElement : event.target;
     return obj;
 };
 /*
@@ -732,7 +732,7 @@ GLOBAL.Event.getEventTarget = function(event) {
 
 /*定义鼠标的mouseOver与mouseOut事件*/
 GLOBAL.Event.mouseOverOut = function(e) {
-    var oEvent = document.all ? window.event: e;
+    var oEvent = document.all ? window.event : e;
     if (document.all) {
         if (oEvent.type == "mouseout") {
             oEvent.relatedTarget = oEvent.toElement;
@@ -793,11 +793,11 @@ mouseMove:function(){
 /*事件扩展方法—————*/
 /*用于兼容chrome下的鼠标事件，使支持 'mouseenter' 和 'mouseleave'*/
 GLOBAL.Event.fixedMouse = function(e, that) { //that 为触发该事件传递下来的this指针
-    var related, type = e.type.toLowerCase();  //这里获取事件名字
+    var related, type = e.type.toLowerCase(); //这里获取事件名字
     if (type == 'mouseover') {
-        related = e.relatedTarget || e.fromElement;  //移入目标元素
+        related = e.relatedTarget || e.fromElement; //移入目标元素
     } else if (type = 'mouseout') {
-        related = e.relatedTarget || e.toElement;  //移出目标元素
+        related = e.relatedTarget || e.toElement; //移出目标元素
     } else return true;
     var contain = GLOBAL.Dom.contains(that, related);
     return 'document' && related && related.prefix != 'xul' && !contain && related !== that;
@@ -810,7 +810,7 @@ GLOBAL.Event.mouseEnter = function(element, callback) {
         function(e) {
             var that = this;
             if (GLOBAL.Event.fixedMouse(e, that)) {
-                callback.call();  //封装回调函数
+                callback.call(); //封装回调函数
             };
         },
         false);
@@ -838,7 +838,7 @@ GLOBAL.Event.fixEvent = function(event) {
     var relatedTarget = {
         "mouseout": event.toElement,
         "mouseover": event.fromElement
-    } [event.type];
+    }[event.type];
     if (relatedTarget) {
         event.relatedTarget = relatedTarget;
     };
@@ -847,25 +847,6 @@ GLOBAL.Event.fixEvent = function(event) {
 
 //Ajax 相关 ---4-------------------------------------------------------------------------------------------------
 GLOBAL.namespace("Ajax");
-
-// 包装XMLHttpRequest对象
-GLOBAL.Ajax.createXmlHttpRequest = function() {
-    var xmlhttp = null;
-    try {
-        xmlhttp = new XMLHttpRequest();
-    }
-    catch(e) {
-        var MSXML = ['MSXML2.XMLHTTP.6.0', 'MSXML2.XMLHTTP.5.0', 'MSXML2.XMLHTTP.4.0', 'MSXML2.XMLHTTP.3.0', 'MSXML2.XMLHTTP', 'Microsoft.XMLHTTP'];
-        for (var n = 0; n < MSXML.length; n++) {
-            try {
-                xmlhttp = new ActiveXObject(MSXML[n]);
-                break;
-            }
-            catch(e) {}
-        }
-    };
-    return xmlhttp;
-}
 
 // 创建完整Ajax程序包 ，该包不支持跨域
 GLOBAL.Ajax.ajax = function(options) {
@@ -876,6 +857,11 @@ GLOBAL.Ajax.ajax = function(options) {
         dataType: options.dataType,
         // 请求的URL
         url: options.url || "",
+        xhr: options.xhr || function() {
+            try {
+                return new XMLHttpRequest();
+            } catch (e) {}
+        },
         // 请求的超时时间
         timeout: options.timeout || 5000,
         // 请求成功.失败或完成(无论成功失败都会调用)时执行的函数
@@ -890,7 +876,7 @@ GLOBAL.Ajax.ajax = function(options) {
     };
 
     // 创建请求对象
-    var xml = new GLOBAL.Ajax.createXmlHttpRequest();
+    var xml = options.xhr();
     // 初始化异步请求
     xml.open(options.type, options.url, true);
     // 请求5秒 如果超时则放弃
@@ -925,20 +911,20 @@ GLOBAL.Ajax.ajax = function(options) {
     };
 
     // 建立与服务器的链接
-    xml.send();
+    xml.send(options.data);
 
     // 判断HTTP响应是否成功
     function httpSuccess(r) {
         try {
             // 如果得不到服务器状态,且我们正在请求本地文件,则认为成功
-            return ! r.status && location.protocol == "file:" ||
+            return !r.status && location.protocol == "file:" ||
                 // 所有200-300之间的状态码 表示成功
                 (r.status >= 200 && r.status <= 300) ||
                 // 文档未修改也算成功
                 r.status == 304 ||
                 // Safari在文档未修改的时候返回空状态
                 navigator.userAgent.indexOf('Safari') >= 0 && typeof r.status == "undefined";
-        } catch(e) {};
+        } catch (e) {};
 
         // 若检查状态失败,则假定请求是失败的
         return false;
@@ -952,7 +938,7 @@ GLOBAL.Ajax.ajax = function(options) {
         var data = !type && ct && ct.indexOf('xml') >= 0;
 
         // 如果是XML则获得XML对象 否则返回文本内容
-        data = type == "xml" || data ? r.responseXML: r.responseText;
+        data = type == "xml" || data ? r.responseXML : r.responseText;
 
         // 如果指定类型是script,则以javascript形式执行返回文本
         if (type == "script") {
@@ -1017,11 +1003,11 @@ GLOBAL.Arrays.indexOf = function(array, elt, from) {
         return isNaN(from) ? array.indexOf(elt) : array.indexOf(elt, from);
     } else {
         var len = array.length;
-        from = isNaN(from) ? 0 : from < 0 ? Math.ceil(from) + len: Math.floor(from);
+        from = isNaN(from) ? 0 : from < 0 ? Math.ceil(from) + len : Math.floor(from);
         for (; from < len; from++) {
             if (array[from] === elt) return from;
         };
-        return - 1;
+        return -1;
     }
 };
 //最后一个元素
@@ -1030,11 +1016,11 @@ GLOBAL.Arrays.lastIndexOf = function(array, elt, from) {
         return isNaN(from) ? array.lastIndexOf(elt) : array.lastIndexOf(elt, from);
     } else {
         var len = array.length;
-        from = isNaN(from) || from >= len - 1 ? len - 1 : from < 0 ? Math.ceil(from) + len: Math.floor(from);
+        from = isNaN(from) || from >= len - 1 ? len - 1 : from < 0 ? Math.ceil(from) + len : Math.floor(from);
         for (; from > -1; from--) {
             if (array[from] === elt) return from;
         };
-        return - 1;
+        return -1;
     }
 };
 //遍历
@@ -1127,11 +1113,11 @@ GLOBAL.namespace("Cookie");
 
 //获得coolie 的值,读取所有保存的cookie字符串
 GLOBAL.Cookie.cookie = function(name) {
-    var cookieArray = document.cookie.split("; ");   //得到分割的cookie名值对
+    var cookieArray = document.cookie.split("; "); //得到分割的cookie名值对
     var cookie = new Object();
     for (var i = 0; i < cookieArray.length; i++) {
-        var arr = cookieArray[i].split("=");          //将名和值分开
-        if (arr[0] == name) return unescape(arr[1]);   //如果是指定的cookie，则返回它的值
+        var arr = cookieArray[i].split("="); //将名和值分开
+        if (arr[0] == name) return unescape(arr[1]); //如果是指定的cookie，则返回它的值
     };
     return "";
 };
@@ -1147,8 +1133,8 @@ GLOBAL.Cookie.getCookie = function(objName) {
 
 //两个参数，一个是cookie的名子，一个是值
 GLOBAL.Cookie.setCookie = function(name, value) {
-    var Days = 30;      //此 cookie 将被保存 30 天
-    var exp = new Date();           //new Date("December 31, 9998");
+    var Days = 30; //此 cookie 将被保存 30 天
+    var exp = new Date(); //new Date("December 31, 9998");
     exp.setTime(exp.getTime() + Days * 24 * 60 * 60 * 1000);
     document.cookie = name + "=" + escape(value) + ";expires=" + exp.toGMTString();
 };
@@ -1156,7 +1142,7 @@ GLOBAL.Cookie.setCookie = function(name, value) {
 //添加cookie
 GLOBAL.Cookie.addCookie = function(objName, objValue, objHours) {
     var str = objName + "=" + escape(objValue);
-    if (objHours > 0) {     //为时不设定过期时间，浏览器关闭时cookie自动消失
+    if (objHours > 0) { //为时不设定过期时间，浏览器关闭时cookie自动消失
         var date = new Date();
         var ms = objHours * 3600 * 1000;
         date.setTime(date.getTime() + ms);
@@ -1177,13 +1163,13 @@ GLOBAL.Cookie.delCookie = function(name) {
 GLOBAL.namespace("Animate");
 
 /*设置透明度*/
-GLOBAL.Animate.setOpacity=function(elem, value){
-    elem.style.opacity=value,elem.style.filter='alpha(opacity='+value*100+')';
+GLOBAL.Animate.setOpacity = function(elem, value) {
+    elem.style.opacity = value, elem.style.filter = 'alpha(opacity=' + value * 100 + ')';
 };
 
 /*设置元素的px值*/
-GLOBAL.Animate.setAnimateStyle=function(elem, value, attr, m){
-    elem.style[attr]=Math[m](value)+'px';
+GLOBAL.Animate.setAnimateStyle = function(elem, value, attr, m) {
+    elem.style[attr] = Math[m](value) + 'px';
 };
 
 /*动画执行函数--方法1*/
@@ -1224,63 +1210,61 @@ GLOBAL.Animate.setAnimateStyle=function(elem, value, attr, m){
 };*/
 
 /*动画执行函数--方法2*/
-GLOBAL.Animate.animate = function(elem, attr, value, time, type, funcBefore, funcAfter ,ID) {
-    var isOpacity = attr === 'opacity', diffValue = false;
+GLOBAL.Animate.animate = function(elem, attr, value, time, type, funcBefore, funcAfter, ID) {
+    var isOpacity = attr === 'opacity',
+        diffValue = false;
     funcBefore && funcBefore.call();
     if (typeof value === 'string') {
-        if (/^[+-]=\d+/.test(value)) value = value.replace('=', ''),diffValue=true;
+        if (/^[+-]=\d+/.test(value)) value = value.replace('=', ''), diffValue = true;
         value = parseFloat(value);
     };
-    var oriVal = parseInt(GLOBAL.Dom.getStyle(elem, attr)),  //原始属性值
-        b = isNaN(oriVal) ? 0 : oriVal,   //开始值,无值时为0
-        c =  diffValue?value:value-b,  //差值
-        d = time,  //总运行时间
+    var oriVal = parseInt(GLOBAL.Dom.getStyle(elem, attr)), //原始属性值
+        b = isNaN(oriVal) ? 0 : oriVal, //开始值,无值时为0
+        c = diffValue ? value : value - b, //差值
+        d = time, //总运行时间
         e = GLOBAL.Animate.easing[type], //缓动类型
-        m=c>0?'ceil':'floor',  //取最大绝对值
-        setProperty=GLOBAL.Animate[isOpacity?'setOpacity':'setAnimateStyle'], //属性设置方法
-        origTime = (new Date) * 1,    //原始时间值
-        iID = ID ? ID : "JCL";  //计数器id
-        animateID[iID] && window.cancelAnimationFrame(animateID[iID]);
-        function go() {
-            var t = (new Date) - origTime;  //已运行时间
-            if (t <= d) {
-                setProperty(elem,e(t,b,c,d),attr,m);
-                animateID[iID] = window.requestAnimationFrame(go);
-            } else {
-                setProperty(elem,b+c,attr,m);   //设置最终值
-                window.cancelAnimationFrame(animateID[iID]);
-                animateID[iID]=null;
-                funcAfter && funcAfter.call();
-            };
+        m = c > 0 ? 'ceil' : 'floor', //取最大绝对值
+        setProperty = GLOBAL.Animate[isOpacity ? 'setOpacity' : 'setAnimateStyle'], //属性设置方法
+        origTime = (new Date) * 1, //原始时间值
+        iID = ID ? ID : "JCL"; //计数器id
+    animateID[iID] && window.cancelAnimationFrame(animateID[iID]);
+
+    function go() {
+        var t = (new Date) - origTime; //已运行时间
+        if (t <= d) {
+            setProperty(elem, e(t, b, c, d), attr, m);
+            animateID[iID] = window.requestAnimationFrame(go);
+        } else {
+            setProperty(elem, b + c, attr, m); //设置最终值
+            window.cancelAnimationFrame(animateID[iID]);
+            animateID[iID] = null;
+            funcAfter && funcAfter.call();
         };
+    };
     animateID[iID] = window.requestAnimationFrame(go);
 };
 
 /*根据给定的 iID 值，来停止相对应的动画*/
-GLOBAL.Animate.animateStop = function(iID){
+GLOBAL.Animate.animateStop = function(iID) {
     window.cancelAnimationFrame(animateID[iID]);
 };
 
 /*动画扩展算法*/
 GLOBAL.Animate.easing = {
-    linear: function(t, b, c, d){
-        return c*t/d + b;
+    linear: function(t, b, c, d) {
+        return c * t / d + b;
     },
-    quartIn: function(t, b, c, d){        /*easeIn*/
-        return c*(t/=d)*t*t*t + b;
+    quartIn: function(t, b, c, d) { /*easeIn*/
+        return c * (t /= d) * t * t * t + b;
     },
-    quartOut: function(t, b, c, d){              /*easeOut*/
-        return -c * ((t=t/d-1)*t*t*t - 1) + b;
+    quartOut: function(t, b, c, d) { /*easeOut*/
+        return -c * ((t = t / d - 1) * t * t * t - 1) + b;
     },
-    quartInOut: function(t, b, c, d){               /*easeInOut*/
-        if ((t/=d/2) < 1) return c/2*t*t*t*t + b;
-        return -c/2 * ((t-=2)*t*t*t - 2) + b;
+    quartInOut: function(t, b, c, d) { /*easeInOut*/
+        if ((t /= d / 2) < 1) return c / 2 * t * t * t * t + b;
+        return -c / 2 * ((t -= 2) * t * t * t - 2) + b;
     },
-    sineInOut: function(t, b, c, d){                    /*swing*/
-        return -c/2 * (Math.cos(Math.PI*t/d) - 1) + b;
+    sineInOut: function(t, b, c, d) { /*swing*/
+        return -c / 2 * (Math.cos(Math.PI * t / d) - 1) + b;
     }
 };
-
-
-
-

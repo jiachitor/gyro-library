@@ -15,7 +15,8 @@
     "email": "iliujiachi@gmail.com"
   },
   "dependencies": {
-    "gulp": "github:gulpjs/gulp#4.0"
+    "gulp": "github:gulpjs/gulp#4.0",
+    "jquery": "^1.11.3"
   },
   "devDependencies": {
     "babel": "^5.8.23",
