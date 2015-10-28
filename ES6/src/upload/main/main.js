@@ -330,6 +330,7 @@ Uploader.prototype.setup = function() {
   this.form.action = this.settings.action;
   this.form.method = "post";
   this.form.enctype = "multipart/form-data";
+  this.form.encoding = "multipart/form-data";
   this.form.target = "";
   document.body.appendChild(this.form);
 
@@ -453,6 +454,7 @@ Uploader.prototype.submit = function() {
           var percent = 0;
           var position = event.loaded || event.position; /*event.position is deprecated*/
           var total = event.total;
+          console.log(event.total)
           if (event.lengthComputable) {
             percent = Math.ceil(position / total * 100);
           }
@@ -478,11 +480,11 @@ Uploader.prototype.submit = function() {
           //进度条     
           addEventListener(xhr.upload, "progress", updateProgress);
           //下载            
-          //xhr.addEventListener("load", uploadComplete, false);
+          xhr.addEventListener("load", uploadComplete, false);
           //错误信息            
-          //xhr.addEventListener("error", uploadFailed, false);
+          xhr.addEventListener("error", uploadFailed, false);
           //取消    
-          //xhr.addEventListener("abort", uploadCanceled, false);
+          xhr.addEventListener("abort", uploadCanceled, false);
         }
 
         return xhr;
@@ -501,25 +503,25 @@ Uploader.prototype.submit = function() {
     return this;
   } else {
     // iframe upload
-    self.iframe = newIframe();
-    self.form.setAttribute('target', self.iframe.getAttribute('name'));
+    this.iframe = newIframe();
+    this.form.setAttribute('target', this.iframe.getAttribute('name'));
     document.body.appendChild(this.iframe);
-
-    self.iframe.onreadystatechange = function() {
+ 
+    this.iframe.onreadystatechange = function() {
       if (self.iframe.readyState == "complete") {
-        console.log(self.form.target)
-        var test_iframe = document.createElement("iframe");
-        test_iframe.src = "javascript:false;";
-        test_iframe.style.display = "none";
-        self.form.appendChild(test_iframe);
-        //test_iframe = null;
+        var input_iframe = document.createElement("iframe");
+        input_iframe.src = "javascript:false;";
+        input_iframe.style.display = "none";
+        self.form.appendChild(input_iframe);
+        input_iframe.parentNode.removeChild(input_iframe);
+
         var response;
         try {
           response = self.iframe.contentWindow.document.body.innerHTML;
         } catch (e) {
-          response = "cross-domain"
+          response = "cross-domain";
         }
-        //this = null;
+        self.iframe.parentNode.removeChild(self.iframe);
         if (!response) {
           if (self.settings.error) {
             self.settings.error(self.input.value);
@@ -531,8 +533,7 @@ Uploader.prototype.submit = function() {
         }
       }
     };
-    self.form.submit();
-
+    this.form.submit();
   }
   return this;
 };
@@ -542,7 +543,8 @@ Uploader.prototype.refreshInput = function() {
   var newInput = this.input.cloneNode(true);
   this.input.parentNode.insertBefore(newInput, this.input.nextSibling);
   removeEventListener(this.input, 'change');
-  this.input = null;
+  this.input.parentNode.removeChild(this.input);
+  this._files = null;
   this.input = newInput;
   this.bindInput();
 };
@@ -567,7 +569,6 @@ Uploader.prototype.success = function(callback) {
       callback(response);
     }
   };
-
   return this;
 };
 
@@ -612,7 +613,6 @@ function createInputs(data) {
   var inputs = [],
     i, html = '';
   for (var name in data) {
-    //html += '<input type="hidden" name="' + name + '" value="' + data[name] + '" />';
     i = document.createElement('input');
     i.type = 'hidden';
     i.name = name;
@@ -656,7 +656,8 @@ function findzIndex($node) {
 function newIframe() {
   var iframeName = 'iframe-uploader-' + iframeCount;
   var iframe = document.createElement("iframe");
-  iframe.name = iframeName;
+  iframe.setAttribute("id",iframeName);  
+  iframe.setAttribute("name",iframeName);  
   iframe.style.display = "none";
   iframeCount += 1;
   return iframe;
@@ -679,42 +680,49 @@ function MultipleUploader(options) {
   uploaders.push(new Uploader(options));
   this._uploaders = uploaders;
 }
+
 MultipleUploader.prototype.submit = function() {
   each(this._uploaders, function(item) {
     item.submit();
   });
   return this;
 };
+
 MultipleUploader.prototype.change = function(callback) {
   each(this._uploaders, function(item) {
     item.change(callback);
   });
   return this;
 };
+
 MultipleUploader.prototype.success = function(callback) {
   each(this._uploaders, function(item) {
     item.success(callback);
   });
   return this;
 };
+
 MultipleUploader.prototype.error = function(callback) {
   each(this._uploaders, function(item) {
     item.error(callback);
   });
   return this;
 };
+
 MultipleUploader.prototype.enable = function() {
   each(this._uploaders, function(item) {
     item.enable();
   });
   return this;
 };
+
 MultipleUploader.prototype.disable = function() {
   each(this._uploaders, function(item) {
     item.disable();
   });
   return this;
 };
+
 MultipleUploader.Uploader = Uploader;
 
 module.exports = MultipleUploader;
