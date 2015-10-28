@@ -26,6 +26,6 @@
   },
   "licenses": "BSD",
   "dependencies": {
-    "jquery": "^2.1.4"
+    
   }
 }

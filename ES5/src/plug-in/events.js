@@ -1,5 +1,4 @@
-;
-! function(window, undefined) {
+(function (global) {
   "use strict";
   // Events
   // -----------------
@@ -123,7 +122,7 @@
     return returned
   }
 
-  Events.prototype.emit = Events.prototype.trigger
+  Events.prototype.emit = Events.prototype.trigger;
 
 
   // Helpers
@@ -222,10 +221,17 @@
     return Object.prototype.toString.call(func) === '[object Function]'
   }
 
-  'function' === typeof define ? define(function() {
-    return Events;
-  }) : function() {
-    window.Events = Events;
-  }();
+  /* CommonJS */
+  if (typeof require === 'function' && typeof module === 'object' && module && typeof exports === 'object' && exports)
+    module.exports = Events;
+  /* AMD */
+  else if (typeof define === 'function' && define['amd'])
+    define(function() {
+      return Events;
+    });
+  /* Global */
+  else {
+    global['Events'] = global['Events'] || Events;
+  }
 
-}(window);
+})(this || window);

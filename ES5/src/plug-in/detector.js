@@ -1,6 +1,6 @@
-;
-! function(window, undefined) {
+(function (global) {
   "use strict";
+
   const userAgent = navigator.userAgent || "",
     platform = navigator.platform || "",
     appVersion = navigator.appVersion || "",
@@ -300,14 +300,20 @@
     return d;
   }
 
+  const Detector = parse(ua);
+  Detector.parse = parse;
 
-  const detector = parse(ua);
-  detector.parse = parse;
+  /* CommonJS */
+  if (typeof require === 'function' && typeof module === 'object' && module && typeof exports === 'object' && exports)
+    module.exports = Detector;
+  /* AMD */
+  else if (typeof define === 'function' && define['amd'])
+    define(function() {
+      return Detector;
+    });
+  /* Global */
+  else {
+    global['Detector'] = global['Detector'] || Detector;
+  }
 
-  'function' === typeof define ? define(function() {
-    return detector;
-  }) : function() {
-    window.detector = detector;
-  }();
-
-}(window);
+})(this || window);

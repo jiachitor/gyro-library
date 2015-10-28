@@ -38,11 +38,13 @@ var popping1 = new popping({
  */
 
 
-(function(){
-    popping = function(options){
+(function (global) {
+    "use strict";
+
+    Popping = function(options){
         this._initialize(options);
     }
-    popping.prototype = {
+    Popping.prototype = {
         _initialize: function(options) {
             var opt = this._setOptions(options);
             this.showshade = opt.showshade;
@@ -203,4 +205,18 @@ var popping1 = new popping({
             };
         }
     };
-})();
+
+  /* CommonJS */
+  if (typeof require === 'function' && typeof module === 'object' && module && typeof exports === 'object' && exports)
+    module.exports = Popping;
+  /* AMD */
+  else if (typeof define === 'function' && define['amd'])
+    define(function() {
+      return Popping;
+    });
+  /* Global */
+  else {
+    global['Popping'] = global['Popping'] || Popping;
+  }
+
+})(this || window);

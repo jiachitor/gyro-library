@@ -1,5 +1,5 @@
 "use strict";
-console.log(detector)
+console.log(Detector)
 
 function parses(userAgents) {
   let uas = userAgents.split(/\r\n|\r|\n/);
@@ -8,7 +8,7 @@ function parses(userAgents) {
 
   for (let i = 0, ua, l = uas.length; i < l; i++) {
     ua = uas[i];
-    rst[i] = [ua, detector.parse(ua)];
+    rst[i] = [ua, Detector.parse(ua)];
   }
 
   return rst;
@@ -61,8 +61,8 @@ function outputs(result) {
     }
 
     console.log(url)
-    console.log(detector);
-    console.log(detector.browser.name);
+    console.log(Detector);
+    console.log(Detector.browser.name);
     console.log(navigator.userAgent)
 
     let opt_html = document.getElementById("output-html");

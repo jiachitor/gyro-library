@@ -1,6 +1,8 @@
 /*弹出插件      "弹出与拖拽\#dialog弹出插件案例.html"*/
 //说明： 功能性弹出框插件，有居中、fixed、遮罩，和显示与关闭事件等
-(function() {
+(function (global) {
+  "use strict";
+
   Dialog = function(options) {
     this._initialize(options);
   };
@@ -168,4 +170,18 @@
       }
     };
   }();
-})();
+
+  /* CommonJS */
+    if (typeof require === 'function' && typeof module === 'object' && module && typeof exports === 'object' && exports)
+        module.exports = Dialog;
+    /* AMD */
+    else if (typeof define === 'function' && define['amd'])
+        define(function () {
+            return Dialog;
+        });
+    /* Global */
+    else {
+        global['Dialog'] = global['Dialog'] || Dialog;
+    }
+
+})(this || window);

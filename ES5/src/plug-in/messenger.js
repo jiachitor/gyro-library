@@ -12,10 +12,9 @@
  * @license release under MIT license
  */
 
-;
-! function(window, undefined) {
+(function(global) {
   "use strict";
-  
+
   // 消息前缀, 建议使用自己的项目名, 避免多项目之间的冲突
   var prefix = "arale-messenger",
     supportPostMessage = 'postMessage' in window;
@@ -117,10 +116,17 @@
     }
   };
 
-  'function' === typeof define ? define(function() {
-    return Messenger;
-  }) : function() {
-    window.Messenger = Messenger;
-  }();
+  /* CommonJS */
+  if (typeof require === 'function' && typeof module === 'object' && module && typeof exports === 'object' && exports)
+    module.exports = Messenger;
+  /* AMD */
+  else if (typeof define === 'function' && define['amd'])
+    define(function() {
+      return Messenger;
+    });
+  /* Global */
+  else {
+    global['Messenger'] = global['Messenger'] || Messenger;
+  }
 
-}(window);
+})(this || window);
