@@ -1,6 +1,29 @@
 /*弹出插件      "弹出与拖拽\#dialog弹出插件案例.html"*/
 //说明： 功能性弹出框插件，有居中、fixed、遮罩，和显示与关闭事件等
-(function (global) {
+(function(global, factory) {
+
+  if (typeof module === "object" && typeof module.exports === "object") {
+    // For CommonJS and CommonJS-like environments where a proper `window`
+    // is present, execute the factory and get jQuery.
+    // For environments that do not have a `window` with a `document`
+    // (such as Node.js), expose a factory as module.exports.
+    // This accentuates the need for the creation of a real `window`.
+    // e.g. var jQuery = require("jquery")(window);
+    // See ticket #14549 for more info.
+    module.exports = global.document ?
+      factory(global, true) :
+      function(w) {
+        if (!w.document) {
+          throw new Error("Position requires a window with a document");
+        }
+        return factory(w);
+      };
+  } else {
+    factory(global);
+  }
+
+  // Pass this if window is not defined yet
+}(typeof window !== "undefined" ? window : this, function(window, noGlobal) {
   "use strict";
 
   Dialog = function(options) {
@@ -171,17 +194,12 @@
     };
   }();
 
-  /* CommonJS */
-    if (typeof require === 'function' && typeof module === 'object' && module && typeof exports === 'object' && exports)
-        module.exports = Dialog;
-    /* AMD */
-    else if (typeof define === 'function' && define['amd'])
-        define(function () {
-            return Dialog;
-        });
-    /* Global */
-    else {
-        global['Dialog'] = global['Dialog'] || Dialog;
-    }
+  if (typeof define === 'function' && define['amd'])
+    define("Dialog", [], function() {
+      return Dialog;
+    });
+  /* Global */
+  else
+    window['Dialog'] = Dialog;
 
-})(this || window);
+}));

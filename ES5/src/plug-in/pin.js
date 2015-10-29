@@ -3,7 +3,30 @@
 // 定位工具组件，将一个 DOM 节点相对对另一个 DOM 节点进行定位操作。
 // 代码易改，人生难得
 
-(function(global) {
+(function(global, factory) {
+
+    if (typeof module === "object" && typeof module.exports === "object") {
+        // For CommonJS and CommonJS-like environments where a proper `window`
+        // is present, execute the factory and get jQuery.
+        // For environments that do not have a `window` with a `document`
+        // (such as Node.js), expose a factory as module.exports.
+        // This accentuates the need for the creation of a real `window`.
+        // e.g. var jQuery = require("jquery")(window);
+        // See ticket #14549 for more info.
+        module.exports = global.document ?
+            factory(global, true) :
+            function(w) {
+                if (!w.document) {
+                    throw new Error("Position requires a window with a document");
+                }
+                return factory(w);
+            };
+    } else {
+        factory(global);
+    }
+
+    // Pass this if window is not defined yet
+}(typeof window !== "undefined" ? window : this, function(window, noGlobal) {
     "use strict";
 
     //curStyle是用来获取元素的最终样式表的
@@ -23,11 +46,11 @@
         ua = (window.navigator.userAgent || "").toLowerCase(),
         isIE6 = ua.indexOf("msie 6") !== -1;
 
-    var Position = function(){}
+    var Position = function() {}
 
     // 将目标元素相对于基准元素进行定位
     // 这是 Position 的基础方法，接收两个参数，分别描述了目标元素和基准元素的定位点
-    Position.pin = function(pinObject, baseObject) {
+    Position.prototype.pin = function(pinObject, baseObject) {
 
         // 将两个参数转换成标准定位对象 { element: a, x: 0, y: 0 }
         pinObject = normalize(pinObject);
@@ -77,8 +100,8 @@
 
     // 将目标元素相对于基准元素进行居中定位
     // 接受两个参数，分别为目标元素和定位的基准元素，都是 DOM 节点类型
-    Position.center = function(pinElement, baseElement) {
-        Position.pin({
+    Position.prototype.center = function(pinElement, baseElement) {
+        this.pin({
             element: pinElement,
             x: '50%',
             y: '50%'
@@ -288,17 +311,12 @@
         };
     }
 
-    /* CommonJS */
-    if (typeof require === 'function' && typeof module === 'object' && module && typeof exports === 'object' && exports)
-        module.exports = Position;
-    /* AMD */
-    else if (typeof define === 'function' && define['amd'])
-        define(function() {
+    if (typeof define === 'function' && define['amd'])
+        define("Position", [], function() {
             return Position;
         });
     /* Global */
-    else {
-        global['Position'] = global['Position'] || Position;
-    }
+    else
+        window['Position'] = Position;
 
-})(this || window);
+}));
