@@ -178,7 +178,17 @@
         };
     };
 
+    function getDataset(elements,type){
+        return elements.dataset ? elements.dataset[type] : elements.getAttribute(type);
+    }
 
+    function setDataset(elements,type,val){
+        if(elements.dataset){
+            elements.dataset[type] = val;
+        }else{
+            elements.setAttribute(type, val);
+        }
+    }
 
     var doc = window.document,
         stickyPrefix = ["-webkit-", "-ms-", "-o-", "-moz-", ""],
@@ -208,7 +218,6 @@
                 //console.log(args[1])
         }
         this.options = args[0];
-        console.log(args[0])
 
         this.elem = document.getElementById(this.options.element);
         this.position = this.options.position;
@@ -245,7 +254,7 @@
         var self = this;
 
         // only bind once
-        if (!this.elem || this.elem.dataset.bind_sticked) {
+        if (!this.elem || getDataset(this.elem,"bind_sticked")) {
             return this;
         }
 
@@ -284,7 +293,7 @@
             };
         } else if (Sticky.isPositionFixedSupported) {
             scrollFn = this._supportFixed;
-        } else {
+        } else { 
             scrollFn = this._supportAbsolute; // ie6
             // avoid floatImage Shake for IE6
             // see: https://github.com/lifesinger/lifesinger.
@@ -310,7 +319,7 @@
             self.adjust();
         }, 120));
 
-        this.elem.dataset.bind_sticked = true;
+        setDataset(this.elem, "bind_sticked", true)
 
         return this;
     };
@@ -339,12 +348,11 @@
 
     iSticky.prototype._supportFixed = function() {
         var scrollTop = window.document.documentElement.scrollTop + document.body.scrollTop;
-        var _sticky = this.elem.dataset.sticked;
+        var _sticky = getDataset(this.elem, "sticked");
         var distance = this._getTopBottom(scrollTop, this._originTop);
 
-        if (!_sticky &&
-            (distance.top !== undefined && distance.top ||
-                distance.bottom !== undefined && distance.bottom)) {
+        // 这里 _sticky 的判断有点诡异
+        if ((_sticky == undefined || _sticky == 'false' )&& (distance.top !== undefined && distance.top || distance.bottom !== undefined && distance.bottom)) {
             this._addPlaceholder();
 
             var cssOpts = {};
@@ -363,17 +371,16 @@
             }
 
             setStyle(this.elem, cssOpts);
-
-            this.elem.dataset.sticked = true;
+            setDataset(this.elem, "sticked", true);
             this.callback.call(this, true);
-        } else if (_sticky && !distance.top && !distance.bottom) {
+        } else if (_sticky == 'true' && !distance.top && !distance.bottom) { 
             this._restore();
         }
     };
 
     iSticky.prototype._supportAbsolute = function() {
         var scrollTop = window.document.documentElement.scrollTop + document.body.scrollTop;
-        var _sticky = this.elem.dataset.sticked;
+        var _sticky = getDataset(this.elem, "sticked");
         var distance = this._getTopBottom(scrollTop, offsetTop(this.elem));
         var triggerCss = curStyle(this.elem);
         var outerHeight = parseInt(triggerCss.height) + parseInt(triggerCss.paddingTop) + parseInt(triggerCss.paddingBottom) + parseInt(triggerCss.borderTopWidth) + parseInt(triggerCss.borderBottomWidth) + parseInt(triggerCss.marginTop) + parseInt(triggerCss.marginBottom);
@@ -382,7 +389,7 @@
             // sticky status change only one time
             if (!_sticky) {
                 this._addPlaceholder();
-                this.elem.dataset.sticked = true;
+                setDataset(this.elem, "sticked", true);
                 this.callback.call(this, true);
             }
             // update element's position
@@ -401,17 +408,17 @@
     iSticky.prototype._supportSticky = function() {
         var scrollTop = window.document.documentElement.scrollTop + document.body.scrollTop;
         // sticky status change for callback
-        var _sticky = this.elem.dataset.sticked;
+        var _sticky = getDataset(this.elem, "sticked");
         var distance = this._getTopBottom(scrollTop, offsetTop(this.elem));
 
         if (!_sticky &&
             (distance.top !== undefined && distance.top ||
                 distance.bottom !== undefined && distance.bottom)) {
-            this.elem.dataset.sticked = true;
+            setDataset(this.elem, "sticked", true);
             this.callback.call(this, true);
         } else if (_sticky && !distance.top && !distance.bottom) {
             // don't need restore style and remove placeholder
-            this.elem.dataset.sticked = false;
+            setDataset(this.elem, "sticked", false);
             this.callback.call(this, false);
         }
     };
@@ -419,11 +426,11 @@
     iSticky.prototype._restore = function() {
         this._removePlaceholder();
 
+
         // set origin style
         setStyle(this.elem, this._originStyles);
 
-        this.elem.dataset.sticked = true;
-
+        setDataset(this.elem, "sticked", false);
         this.callback.call(this, false);
     };
 
@@ -465,7 +472,7 @@
 
     iSticky.prototype.destroy = function() {
         this._restore();
-        this.elem.dataset.bind_sticked = false;
+        setDataset(this.elem, "bind_sticked", false);
 
         removeEventListener(window, 'scroll');
         removeEventListener(window, 'resize');

@@ -70,15 +70,16 @@
     // sticky
     var sticky1 = new Sticky("stick", 30, function(status) {
         if (status) {
+          //console.log(status)
             window.console && console.log("stick");
         } else {
+          //console.log(status)
             window.console && console.log("unstick");
         }
     });
 
-    //var sticky2 = new Sticky.fix("nav");
+    var sticky2 = new Sticky.fix("nav");
 
-    // sticky
     var sticky3 = new Sticky("stick2", 100, function(status) {
         if (status) {
             window.console && console.log("stick");
