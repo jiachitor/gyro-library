@@ -152,7 +152,7 @@
             } else if (isVIEWPORT) {
                 return {
                     left: parseInt(document.documentElement.scrollLeft),
-                    top: parseInt(document.documentElement.scrollTop)
+                    top: parseInt(document.documentElement.scrollTop + document.body.scrollTop)
                 };
             } else {
                 return getOffset(element);

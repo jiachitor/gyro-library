@@ -93,71 +93,76 @@
 
   <script src="../../src/plug-in/pin.js"></script>
   <script>
-
-  console.log(Position)
-
+  
   // 注意使用的是id 
-    Position.pin('a1', {
-      element: 'b1',
-      x: '50px',
-      y: '50px'
-    });
-
-    Position.pin('a2', {
-      element: 'b2',
-      x: 50,
-      y: 50
-    });
-
-    Position.pin({
-      element: 'a3',
-      x: -50,
-      y: -50
-    }, {
-      element: 'b3'
-    });
-
-
-    Position.pin({
-      element: 'a4',
-      x: 'center',
-      y: '50%'
-    }, {
-      element: 'b4',
-      x: '100%',
-      y: '50%'
-    });
-
-    Position.center('a5', 'b5');
-
-    Position.pin('a6', {
-      x: 50,
-      y: 50
-    });
-    document.getElementById('J_reposition6').onclick = function() {
-      Position.pin('a6', {
-        x: 50,
-        y: 50
+    var position1 = new Position;
+      position1.pin('a1', {
+        element: 'b1',
+        x: '50px',
+        y: '50px'
       });
-    };
 
-    Position.center('a7');
+    var position2 = new Position;
+        position2.pin('a2', {
+          element: 'b2',
+          x: 50,
+          y: 50
+        });
 
-    document.getElementById('J_reposition7').onclick = function() {
-        Position.center('a7');
-    };
+    var position3 = new Position;
+        position3.pin({
+          element: 'a3',
+          x: -50,
+          y: -50
+        }, {
+          element: 'b3'
+        });
 
+    var position4 = new Position;
+        position4.pin({
+          element: 'a4',
+          x: 'center',
+          y: '50%'
+        }, {
+          element: 'b4',
+          x: '100%',
+          y: '50%'
+        });
 
-    Position.pin('a8', {
-      element: 'b8',
-      x: '100%+50px',
-      y: '50%-50'
-    });
+    var position5 = new Position;
+        position5.center('a5', 'b5');
 
-    Position.pin('a10', {
-      x: 400,
-      y: 0
-    });
+    var position6 = new Position;
+        position6.pin('a6', {
+          x: 50,
+          y: 50
+        });
+        document.getElementById('J_reposition6').onclick = function() {
+          position6.pin('a6', {
+            x: 50,
+            y: 50
+          });
+        };
+
+    var position7 = new Position;
+        position7.center('a7');
+
+        document.getElementById('J_reposition7').onclick = function() {
+            Position.center('a7');
+        };
+
+    var position8 = new Position;
+        position8.pin('a8', {
+          element: 'b8',
+          x: '100%+50px',
+          y: '50%-50'
+        });
+
+    var position9 = new Position;
+        position9.pin('a10', {
+          x: 400,
+          y: 0
+        });
 
   </script>
 </body>

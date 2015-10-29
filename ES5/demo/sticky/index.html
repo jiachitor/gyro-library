@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge, chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no" />
+  <title>Sticky</title>
+  <link rel="stylesheet" href="./css/app.css"></head>
+  <style>
+    /*注意这里最好配置一下 body 的 position,下面的几个设置都是重要的*/
+    body{
+      position: relative;
+      margin:0;
+      padding:0
+    }
+    #content {    
+      position: static;
+    }
+
+    .help {
+        height: 300px;
+        background-color: #f3f4f9;
+        text-align: center;
+        line-height: 300px;
+    }
+    #stick, #stick2,#bottom {
+        background: #08c;
+        color: #fff;
+        width: 300px;
+        height: 40px;
+
+        line-height: 40px;
+        z-index: 1;
+        text-align: center;
+    }
+    #nav, #gotop {
+        position: absolute;
+        height: 30px;
+        line-height: 30px;
+        background: #08c;
+        color: #fff;
+        z-index: 10;
+        text-align: center;
+    }
+    #gotop {
+        bottom: 50px;
+        right: 10px;
+        width: 80px;
+    }
+    #nav {
+        left: 0;
+        top: 0;
+        width: 100%;
+    }
+    
+  </style>
+<body>
+  <div class="help">撑高度的元素。</div>
+
+  <div id="stick">跟随滚动的测试元素(top)</div>
+  <div id="stick2">跟随滚动的测试元素2(top)</div>
+
+  <div class="help" style="height: 1800px; line-height: 800px;">撑高度的元素。</div>
+  <div id="nav">顶层fixed导航</div>
+
+  <script src="../../src/plug-in/sticky.js"></script>
+  <script>
+  
+    // sticky
+    var sticky1 = new Sticky("stick", 30, function(status) {
+        if (status) {
+            window.console && console.log("stick");
+        } else {
+            window.console && console.log("unstick");
+        }
+    });
+
+    //var sticky2 = new Sticky.fix("nav");
+
+    // sticky
+    var sticky3 = new Sticky("stick2", 100, function(status) {
+        if (status) {
+            window.console && console.log("stick");
+        } else {
+            window.console && console.log("unstick");
+        }
+    });
+
+  </script>
+</body>
+
+</html>
