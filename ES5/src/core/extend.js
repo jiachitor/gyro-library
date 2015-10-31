@@ -1,27 +1,29 @@
 /*动画扩展类————————————————————————————————————————————————————————————————————————————————————————————————————————*/
 
 
-GLOBAL.Animate.fadeIn = function(elem, time, type, callback) {
+function fadeIn(elem, time, type, callback) {
 	if(!callback){return};
 	if (typeof time !== 'number') fn = time,time = 400; 
 	if (typeof type === 'function') fn = type,type = '';
-	GLOBAL.Animate.animate(elem, 'opacity', 1, time, type || 'linear',
+	animate(elem, 'opacity', 1, time, type || 'linear',
 	function() {
-		GLOBAL.Dom.setStyle(elem, {"display":"block","opacity":"0"});
+		setStyle(elem, {"display":"block","opacity":"0"});
 	},
 	callback.call());
 };
-GLOBAL.Animate.fadeOut = function(elem,time, type, callback) {
+
+function fadeOut(elem,time, type, callback) {
 	if(!callback){return};
 	if (typeof time !== 'number') fn = time,time = 400;
 	if (typeof type === 'function') fn = type,type = '';
-	GLOBAL.Animate.animate(elem, 'opacity', 0, time, type || 'linear', null,
+	animate(elem, 'opacity', 0, time, type || 'linear', null,
 	function() {
 		elem.style.display = 'none';
 		callback && callback.call();
 	});
 };
-GLOBAL.Animate.easing = {
+
+var easing = {
 	linear: function(t, b, c, d){
 		return c*t/d + b;
 	},
@@ -151,9 +153,8 @@ GLOBAL.Animate.easing = {
 
 
 
-//DOM 相关 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-GLOBAL.namespace("Dom");
-GLOBAL.Dom.getNextNode = function (node) {    //node指DOM节点
+//DOM 相关 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+function getNextNode(node) {    //node指DOM节点
     node = typeof node == "string" ? document.getElementById(node) : node;
     var nextNode = node.nextSibling;
     if (!nextNode) return null;
@@ -179,7 +180,7 @@ GLOBAL.Dom.getNextNode = function (node) {    //node指DOM节点
  */
 
 /*添加元素*/
-GLOBAL.Dom.addElement = function (tag, id, value) {
+function addElement(tag, id, value) {
     if (arguments.length <= 1) {
         return document.createElement(tag);
     } else {
@@ -190,49 +191,60 @@ GLOBAL.Dom.addElement = function (tag, id, value) {
 };
 
 //获取元素相对于这个页面的x和y坐标。
-GLOBAL.Dom.pageX = function (elem){
+function pageX(elem){
     return elem.offsetParent?(elem.offsetLeft+pageX(elem.offsetParent)):elem.offsetLeft;
 }
-GLOBAL.Dom.pageY = function (elem){
+
+function pageY(elem){
     return elem.offsetParent?(elem.offsetTop+pageY(elem.offsetParent)):elem.offsetTop;
 }
 //获取元素相对于父元素的x和y坐标。
-GLOBAL.Dom.parentX = function (elem){
+function parentX (elem){
     return elem.parentNode==elem.offsetParent?elem.offsetLeft:pageX(elem)-pageX(elem.parentNode);
 }
-GLOBAL.Dom.parentY = function (elem){
+
+function parentY (elem){
     return elem.parentNode==elem.offsetParent?elem.offsetTop:pageY(elem)-pageY(elem.parentNode);
 }
+
 //获取使用css定位的元素的x和y坐标。
-GLOBAL.Dom.posX = function (elem){
+function posX (elem){
     return parseInt(getStyle(elem,"left"));
 }
-GLOBAL.Dom.posY = function (elem){
+
+function posY (elem){
     return parseInt(getStyle(elem,"top"));
 }
+
 //设置元素位置。
-GLOBAL.Dom.setX = function (elem,pos){
+function setX (elem,pos){
     elem.style.left=pos+"px";
 }
-GLOBAL.Dom.setY = function (elem,pos){
+
+function setY (elem,pos){
     elem.style.top=pos+"px";
 }
+
 //增加元素X和y坐标。
-GLOBAL.Dom.addX = function (elem,pos){
+function addX (elem,pos){
     set(elem,(posX(elem)+pos));
 }
-GLOBAL.Dom.addY = function (elem,pos){
+
+function addY (elem,pos){
     set(elem,(posY(elem)+pos));
 }
+
 //获取元素使用css控制大小的高度和宽度
-GLOBAL.Dom.getHeight = function (elem){
+function getHeight (elem){
     return parseInt(getStyle(elem,"height"));
 }
-GLOBAL.Dom.getWidth = function (elem){
+
+function getWidth (elem){
     return parseInt(getStyle(elem,"width"));
 }
+
 //获取元素可能，完整的高度和宽度
-GLOBAL.Dom.getFullHeight = function (elem){
+function getFullHeight (elem){
     if(getStyle(elem,"display")!="none"){
         return getHeight(elem)||elem.offsetHeight;
     }else{
@@ -242,7 +254,8 @@ GLOBAL.Dom.getFullHeight = function (elem){
         return h;
     }
 }
-GLOBAL.Dom.getFullWidth = function (elem){
+
+function getFullWidth (elem){
     if(getStyle(elem,"display")!="none"){
         return getWidth(elem)||elem.offsetWidth;
     }else{
@@ -254,7 +267,7 @@ GLOBAL.Dom.getFullWidth = function (elem){
 }
 
 //-----显示，隐藏-----
-GLOBAL.Dom.toggleDisplay = function (id) {
+function toggleDisplay (id) {
     var oTarget = this.document.getElementById(id);
     if (!oTarget) {
         return false;
@@ -263,10 +276,11 @@ GLOBAL.Dom.toggleDisplay = function (id) {
 }
 
 //显示和隐藏
-GLOBAL.Dom.show = function (elem){
+function show (elem){
     elem.style.display=elem.$oldDisplay||" ";
 }
-GLOBAL.Dom.hide = function (elem){
+
+function hide (elem){
     var curDisplay=getStyle(elem,"display");
     if(curDisplay!="none"){
         elem.$oldDisplay=curDisplay;
@@ -274,22 +288,23 @@ GLOBAL.Dom.hide = function (elem){
     }
 }
 
-
-
 //以下这部分还没想好怎么改
 //获取鼠标光标相对于整个页面的位置。
 function getX(e){
     e=e||window.event;
     return e.pageX||e.clientX+document.body.scrollLeft;
 }
+
 function getY(e){
     e=e||window.event;
     return e.pageY||e.clientY+document.body.scrollTop;
 }
+
 //获取鼠标光标相对于当前元素的位置。
 function getElementX(e){
     return (e&&e.layerX)||window.event.offsetX;
 }
+
 function getElementY(e){
     return (e&&e.layerY)||window.event.offsetY;
 }
@@ -325,8 +340,7 @@ function windowWidth() {
 
 
 //Lang相关 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-GLOBAL.namespace("Lang");
-GLOBAL.Lang.trim = function(ostr){
+function trim(ostr){
     return ostr.replace(/^\s+|\s+$/g,"");
 }
 /*
@@ -337,34 +351,34 @@ GLOBAL.Lang.trim = function(ostr){
 
 
 /*定义类型判断函数*/
-GLOBAL.Lang.isNumber = function(s){
+function isNumber(s){
     return !isNaN(s);
 }
-GLOBAL.Lang.isString = function(s){
+function isString(s){
     return typeof s == "string";
 }
-GLOBAL.Lang.isBoolean = function(s){
+function isBoolean(s){
     return typeof s == "boolean";
 }
-GLOBAL.Lang.isFunction = function(s){
+function isFunction(s){
     return typeof s == "function";
 }
-GLOBAL.Lang.isNull = function(s){
+function isNull(s){
     return s == null;
 }
-GLOBAL.Lang.isUndefined = function(s){
+function isUndefined(s){
     return typeof s == "undefined";
 }
-GLOBAL.Lang.isEmpty = function(s){
+function isEmpty(s){
     return /^\s*$/.test(s);
 }
-GLOBAL.Lang.isArray = function(s){
+function isArray(s){
     return s instanceof Array;
 }
 
 /*定义扩展函数*/
-GLOBAL.Lang.extend = function(subClass,superClass){
-    var F = function(){};
+function extend(subClass,superClass){
+    var F(){};
     F.prototype = superClass.prototype;
     subClass.prototype = new F();
     subClass.prototype.constructor = subClass;
@@ -376,7 +390,7 @@ GLOBAL.Lang.extend = function(subClass,superClass){
 
 
 // 数字比较大小 (两个输入为字符串或数字类型，长数型数字比较)
-GLOBAL.Lang.compareNumber = function(prevNum, nextNum) {
+function compareNumber(prevNum, nextNum) {
     if (isNaN(prevNum) || prevNum.length == 0) {
         throw new Error("第一个输入非数字");
     }

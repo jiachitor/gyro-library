@@ -1,74 +1,106 @@
 <!doctype html>
 <html>
 <head>
-<meta charset="utf-8">
-<title>拖放效果</title>
-<link href="http://static.9xwan.com/www/css/reset.css" media="screen" rel="stylesheet" type="text/css" />
-<style>
-	#idContainer{ border:10px solid #990000; width:600px; height:300px;}
-	#idDrag{ border:5px solid #C4E3FD; background:#C4E3FD; width:50px; height:50px; top:50px; left:50px;}
-	#idHandle{cursor:move; height:25px; background:#0000FF; overflow:hidden;}
-</style>
-    <script type="text/javascript" src="../jclibrary/jcl-core.js"></script>
-    <script type="text/javascript" src="../plug-in/drag.js"></script>
+	<meta charset="utf-8">
+	<title>拖放效果</title>
+	<style>
+	.btn{
+		display: inline-block;
+		padding: 10px;
+		background: #ccc;
+		text-decoration: none;
+		margin: 20px 20px 0 0;
+	}
+	.ui-area-popup{background: none repeat scroll 0 0 #fff;border: 1px solid #cecbce;box-shadow: 0 0 5px #ddd;display: none;padding: 15px; position: absolute; width: 390px;z-index: 99;}
+	</style>
+
 </head>
 
 <body id="body">
-	<div id="idContainer">
-		<div id="idDrag">
-			<div id="idHandle"></div>
+	<a id="js-store-selector" href="javascript:void(0);" class="btn">fixed 效果</a>
+	<a id="js-dialog-selector" href="javascript:void(0);" class="btn">dialog 效果</a>
+
+	<div id="js-popping">
+		<!-- fixed 效果 -->
+		<div class="ui-area-popup js-ui-dragboxs" id="js-area-popup">
+			<div class="ui-tab"  id="js-tab-3">
+				<ul class="ui-tab-menuWrapper fn-clear">
+					<li class="js-ui-tab-menu  ui-tab-menu-active">
+						<a class="hover" href="#none"> <em>请选择</em> <i></i>
+						</a>
+					</li>
+					<li class="js-ui-tab-menu">
+						<a class=""  href="#none"> <em>请选择</em> <i></i>
+						</a>
+					</li>
+				</ul>
+				<div class="ui-tab-contentWrapper">
+					<div class="js-ui-tab-content ui-tab-content-active">
+						<ul class="ui-area-list fn-clear" id="stock_province_item">
+							<li>
+								<a data-value="1" href="#none">北京</a>
+							</li>
+							<li>
+								<a data-value="2" href="#none">上海</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+			<div class="close" id="js-store-popup-close"></div>
 		</div>
+
+
+		<!-- dialog 效果 -->
+		<div class="ui-area-popup js-ui-dragboxs" id="js-area-dialog" style="height:280px;">
+			<div class="ui-tab"  id="js-tab-3">
+				弹出框
+			</div>
+			<div class="close" id="js-store-dialog-close"></div>
+		</div>
+
 	</div>
-	<input id="idReset" type="button" value="复位" />
-	<input id="idLock" type="button" value="锁定" />
-	<input id="idLockX" type="button" value="锁定水平" />
-	<input id="idLockY" type="button" value="锁定垂直" />
-	<input id="idLimit" type="button" value="范围锁定" />
-	<input id="idLimitOff" type="button" value="取消范围锁定" />
-	<br />
-	拖放状态：<span id="idShow">未开始</span> 
+	<script type="text/javascript" src="../../src/plug-in/popping.js"></script>
+	<script>
+
+	/*fixed */
+  var popping1 = new Popping({
+      allchooseid  : "js-popping",       /*使用这个id是为了保证一个页面里只有一个弹出框显示,所有弹出框都放在这个id 里面*/
+      alldragclass  : "js-ui-dragboxs",  /*配合上面，需要唯一显示的弹出框都配置相同的class,用来控制唯一显示*/
+      displayusage  : "fixDrag",  /*“middleDrag”为剧中显示，“fixDrag”为定位显示*/
+      closeBtn : "js-store-popup-close",  /*关闭按钮id*/
+      showshade : false,              //是否显示遮罩
+      shadeName :"js-popup-shade",    //遮罩的id
+      onresize : true,                 // 窗口大小变化时是否触发事件
+      background : "#000",             //遮罩的背景颜色
+      opacity : "0.7",                 //遮罩的透明度
+      tanBox : "js-area-popup",                  //通过id来选择弹出框
+      showBtn : "js-store-selector",                //通过具体id 值来选择弹出事件触发对象
+      fixDrag_X : 0,               //固定位置弹出时设置X轴 方向的偏移量
+      fixDrag_Y : 25                //固定位置弹出时设置Y轴 方向的偏移量
+  });
+
+
+  // 弹出框
+  var popping1 = new Popping({
+      allchooseid  : "js-popping",       /*使用这个id是为了保证一个页面里只有一个弹出框显示,所有弹出框都放在这个id 里面*/
+      alldragclass  : "js-ui-dragboxs",  /*配合上面，需要唯一显示的弹出框都配置相同的class,用来控制唯一显示*/
+      displayusage  : "middleDrag",  /*“middleDrag”为剧中显示，“fixDrag”为定位显示*/
+      closeBtn : "js-store-dialog-close",  /*关闭按钮id*/
+      showshade : true,              //是否显示遮罩
+      shadeName :"js-popup-shade",    //遮罩的id
+      onresize : true,                 // 窗口大小变化时是否触发事件
+      background : "#000",             //遮罩的背景颜色
+      opacity : "0.3",                 //遮罩的透明度
+      tanBox : "js-area-dialog",                  //通过id来选择弹出框
+      showBtn : "js-dialog-selector",                //通过具体id 值来选择弹出事件触发对象
+      fixDrag_X : 0,               //固定位置弹出时设置X轴 方向的偏移量
+      fixDrag_Y : 25                //固定位置弹出时设置Y轴 方向的偏移量
+  });
+
+
+
+
+	</script>
 </body>
 </html>
-<script>
-
-var drag = new Drag("idDrag", {
-	mxContainer: "idContainer",
-	Handle: "idHandle",
-	Limit: true,
-	View:true,  //限制在可视区域移动
-	onStart: function() {
-		document.getElementById("idShow").innerHTML = "开始拖放";
-	},
-	onMove: function() {
-		document.getElementById("idShow").innerHTML = "left：" + this.Drag.offsetLeft + "；top:" + this.Drag.offsetTop;
-	},
-	onStop: function() {
-		document.getElementById("idShow").innerHTML = "结束拖放";
-	}
-});
-
-document.getElementById("idReset").onclick = function() {
-	drag.Limit = true;
-	drag.mxLeft = drag.mxTop = 0;
-	drag.mxRight = drag.mxBottom = 9999;
-	drag.LockX = drag.LockY = drag.Lock = false;
-};
-
-document.getElementById("idLock").onclick = function() {
-	drag.Lock = true;
-};
-document.getElementById("idLockX").onclick = function() {
-	drag.LockX = true;
-};
-document.getElementById("idLockY").onclick = function() {
-	drag.LockY = true;
-};
-document.getElementById("idLimit").onclick = function() {
-	drag.mxRight = drag.mxBottom = 200;
-	drag.Limit = true;
-};
-document.getElementById("idLimitOff").onclick = function() {
-	drag.Limit = false;
-};
-
-</script>
