@@ -1,0 +1,110 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>demo_tab组件_面向对象</title>
+  <style type="text/CSS">
+	ul {padding:0;margin:0}
+	.ui-tab {width:400px;}
+	.ui-tab .ui-tab-menuWrapper {padding-left:20px;}
+	.ui-tab .ui-tab-menuWrapper li {float:left;display:inline;padding:5px;border:1px solid #333;border-bottom:none;margin-right:5px;}
+	.ui-tab .ui-tab-menuWrapper .ui-tab-menu-active{background-color:#333;color:#fff;}
+    .ui-tab .ui-tab-contentWrapper {border:1px solid #333;clear:left;padding:5px;}
+    .ui-tab .ui-tab-contentWrapper .Js-ui-tab-content{display: none;}
+    .ui-tab .ui-tab-contentWrapper .ui-tab-content-active{display: block;}
+	</style>
+   </head>
+  
+  <body>
+    <div class="ui-tab"  id="js-tab-1">
+          <ul class="ui-tab-menuWrapper">
+            <li class="js-ui-tab-menu ui-tab-menu-active">menu1-1</li>
+            <li class="js-ui-tab-menu">menu1-2</li>
+            <li class="js-ui-tab-menu">menu1-3</li>
+          </ul>
+        <div class="ui-tab-contentWrapper">
+            <div class="js-ui-tab-content ui-tab-content-active">
+                <div>content1-1</div>
+                <ul>
+                    abc
+                </ul>
+            </div>
+            <div class="js-ui-tab-content">
+                <p>content1-2</p>
+                <div>abc</div>
+            </div>
+            <div class="js-ui-tab-content">content1-3</div>
+        </div>
+    </div>
+    
+    <div class="ui-tab" id="js-tab-2">
+        <ul class="ui-tab-menuWrapper">
+            <li class="js-ui-tab-menu  ui-tab-menu-active">menu2-1</li>
+            <li class="js-ui-tab-menu">menu2-2</li>
+        </ul>
+        <div class="ui-tab-contentWrapper">
+            <div class="js-ui-tab-content ui-tab-content-active">
+                    <div>content2-1</div>
+                    <ul>
+                        abc
+                    </ul>
+            </div>
+            <div class="js-ui-tab-content">
+                <p>content2-2</p>
+                <div>abc</div>
+             </div>
+        </div>
+    </div>
+
+    <div class="ui-tab"  id="js-tab-3">
+          <ul class="ui-tab-menuWrapper">
+                <li class="js-ui-tab-menu  ui-tab-menu-active">menu3-1</li>
+                <li class="js-ui-tab-menu">menu3-2</li>
+                <li class="js-ui-tab-menu">menu3-3</li>
+                <li class="js-ui-tab-menu">menu3-4</li>
+                <li class="js-ui-tab-menu" >menu3-5</li>
+          </ul>
+        <div class="ui-tab-contentWrapper">
+            <div class="js-ui-tab-content ui-tab-content-active">
+                <div>content3-1</div>
+                <ul>
+                    abc
+                </ul>
+            </div>
+              <div class="js-ui-tab-content">
+                <p>content3-2</p>
+                <div>abc</div>
+              </div>
+            <div class="js-ui-tab-content">content3-3</div>
+            <div class="js-ui-tab-content">
+                <p>content3-4</p>
+                <div>abc</div>
+            </div>
+            <div class="js-ui-tab-content">content3-5</div>
+        </div>
+    </div>
+    
+</body>
+  </html>
+<script type="text/JavaScript" src="../../src/plug-in/tabs.js"></script>
+<script type="text/JavaScript">
+
+    var mayTab1 = new Tab({
+		root: "js-tab-1",
+		trigger: "mouseover"
+	});
+	var mayTab2 = new Tab({
+		root: "js-tab-2",
+		currentClass: "ui-tab-menu-active",
+		autoPlay: true,
+		playTime: 5000
+	});
+	var mayTab3 = new Tab({
+		root: "js-tab-3",
+		currentClass: "ui-tab-menu-active",
+		trigger: "mouseover",
+		handler: function(index) {
+			alert("您激活的是第" + (index + 1) + "个标签")
+		}
+	});
+</script>

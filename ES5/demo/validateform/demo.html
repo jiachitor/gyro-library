@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>表单验证控件</title>
+  <!--  <script type="text/javascript" src="JCbase.1.0.js"></script>-->
+    <style type="text/css">
+        #JCForm div {
+            margin: 5px 0;
+            font-size: 12px;
+        }
+        #JCForm2 div {
+            margin: 5px 0;
+            font-size: 12px;
+        }
+
+        .tip {
+            display: inline-block;
+            padding: 5px;
+            line-height: 16px;
+        }
+
+        .tip img {
+            position: relative;
+            top: 3px;
+            *top: 2px;
+        }
+
+        .tip span {
+            position: relative;
+            left: 5px;
+            *top: -1px;
+        }
+
+        label {
+            width: 100px;
+            float: left;
+            line-height: 23px;
+            font-size: 13px;
+        }
+
+        .typetext, .typepsw, .typeselect {
+            border-radius: 3px;
+            border: 2px solid #a1a1a1;
+            height: 20px;
+            line-height: 20px;
+            width: 150px;
+            padding: 2px;
+        }
+
+        .typeselect {
+            height: 27px;
+            line-height: 27px;
+            width: 158px;
+        }
+		
+		#strength_box{ display:inline-block; overflow:hidden; background:#eee; padding:0px; margin:0px;}
+		#strength_box li{ display:inline-block; _display:block; _zoom:1; float:left; width:30px; text-align:center; }
+		
+		.suggest-container{border:1px solid #C1C1C1;visibility:hidden; background:#fff;}
+		.suggest-item{padding:3px 2px;}
+		.suggest-active {background:#33CCFF;color:white;padding:3px 2px;}			
+
+    </style>
+</head>
+<body>
+<form action="checkForm.php" method="post" id="JCForm">
+    <div>
+        <label for="username"> 用户名：</label>
+        <input type="text" name="username" id="account" class="typetext required ">
+        <div id="account-pop" class="ui-register-poptip-box" style="display: inline-block;">
+            <div class="ui-poptip">
+                <i id="account-tip" class="iconfont"></i>
+                <b id="account-b">必填，字母、数字以及(-_)组成，以字母开头</b>
+            </div>
+        </div>
+    </div>
+    <div>
+        <label for="email"> 邮箱是：</label>
+        <input type="text" name="email" id="email" class="typetext required">
+        <div id="email-pop" class="ui-register-poptip-box" style="display: inline-block;">
+            <div class="ui-poptip">
+                <i id="email-tip" class="iconfont"></i>
+                <b id="email-b">必填</b>
+            </div>
+        </div>
+    </div>
+    <div>
+        <label for="psw"> 密码：</label>
+        <input type="password" name="psw" id="psw" class="typepsw required">
+        <ul id="strength_box">
+				<li width="33%" id="strength_L">弱</li>
+				<li width="33%" id="strength_M">中</li>
+				<li width="33%" id="strength_H">强</li>
+		</ul>
+        <div id="psw-pop" class="ui-register-poptip-box" style="display: inline-block;">
+            <div class="ui-poptip">
+                <i id="psw-tip" class="iconfont"></i>
+                <b id="psw-b">6-12位字符</b>
+            </div>
+        </div>
+    </div>
+    <div>
+        <label for="pswRepeat"> 重复密码：</label>
+        <input type="password" name="pswRepeat" id="pswRepeat" class="typepsw required">
+        <div id="pswRepeat-pop" class="ui-register-poptip-box" style="display: inline-block;">
+            <div class="ui-poptip">
+                <i id="pswRepeat-tip" class="iconfont"></i>
+                <b id="pswRepeat-b"></b>
+            </div>
+        </div>
+    </div>
+    <!--<div>
+        <label for="phoneNo"> 固定电话：</label>
+        <input type="text" name="phoneNo" id="phoneNo" class="typetext">
+        <span class="tip"></span>
+    </div>
+    <div>
+        <label for="mobileNo"> 手机号码：</label>
+        <input type="text" name="mobileNo" id="mobileNo" class="typetext required">
+        <span class="tip">必填</span>
+    </div>-->
+    <div>
+        <label for="question"> 查询密码问题：</label>
+        <select name="question" id="question" class="typeselect" >
+            <option selected value="">--请您选择--</option>
+            <option value="我的宠物名字？">我的宠物名字？</option>
+            <option value="我最好的朋友是谁？">我最好的朋友是谁？</option>
+            <option value="我最喜爱的颜色？">我最喜爱的颜色？</option>
+            <option value="我最喜爱的电影？">我最喜爱的电影？</option>
+            <option value="我最喜爱的影星？">我最喜爱的影星？</option>
+            <option value="我最喜爱的歌曲？">我最喜爱的歌曲？</option>
+            <option value="我最喜爱的食物？">我最喜爱的食物？</option>
+            <option value="我最大的爱好？">我最大的爱好？</option>
+        </select>
+        <div id="question-pop" class="ui-register-poptip-box" style="display: inline-block;">
+            <div class="ui-poptip">
+                <i id="question-tip" class="iconfont"></i>
+                <b id="question-b">用于找回密码</b>
+            </div>
+        </div>
+    </div>
+    <div>
+        <label for="question2"> 查询密码答案：</label>
+        <input type="text" name="question2" id="question2" class="typetext">
+        <div id="question2-pop" class="ui-register-poptip-box" style="display: inline-block;">
+            <div class="ui-poptip">
+                <i id="question2-tip" class="iconfont"></i>
+                <b id="question2-b"></b>
+            </div>
+        </div>
+    </div>
+    <div>
+        <label for="byear">出生日期：</label>
+        <select name="byear" tabindex="8" id="byear">
+            <script language="JavaScript">
+                var tmp_now = new Date();
+                for (i = 1930; i <= tmp_now.getFullYear(); i++) {
+                    document.write("<option value='" + i + "' " + (i == tmp_now.getFullYear() - 24 ? "selected" : "") + ">" + i + "</option>")
+                }
+            </script>
+        </select>
+        年
+        <select name="bmonth">
+            <option value="01" selected>1</option>
+            <option value="02">2</option>
+            <option value="03">3</option>
+            <option value="04">4</option>
+            <option value="05">5</option>
+            <option value="06">6</option>
+            <option value="07">7</option>
+            <option value="08">8</option>
+            <option value="09">9</option>
+            <option value="10">10</option>
+            <option value="11">11</option>
+            <option value="12">12</option>
+        </select>
+        月
+        <select name="bday" tabindex="10" alt="日:无内容">
+            <option value="01" selected>1</option>
+            <option value="02">2</option>
+            <option value="03">3</option>
+            <option value="04">4</option>
+            <option value="05">5</option>
+            <option value="06">6</option>
+            <option value="07">7</option>
+            <option value="08">8</option>
+            <option value="09">9</option>
+            <option value="10">10</option>
+            <option value="11">11</option>
+            <option value="12">12</option>
+            <option value="13">13</option>
+            <option value="14">14</option>
+            <option value="15">15</option>
+            <option value="16">16</option>
+            <option value="17">17</option>
+            <option value="18">18</option>
+            <option value="19">19</option>
+            <option value="20">20</option>
+            <option value="21">21</option>
+            <option value="22">22</option>
+            <option value="23">23</option>
+            <option value="24">24</option>
+            <option value="25">25</option>
+            <option value="26">26</option>
+            <option value="27">27</option>
+            <option value="28">28</option>
+            <option value="29">29</option>
+            <option value="30">30</option>
+            <option value="31">31</option>
+        </select>
+        <div id="byear-pop" class="ui-register-poptip-box" style="display: inline-block;">
+            <div class="ui-poptip">
+                <i id="byear-tip" class="iconfont"></i>
+                <b id="byear-b"></b>
+            </div>
+        </div>
+    </div>
+    <div>
+        <label for="gender">性别：</label>
+        <input type="radio" name="gender" id="gender" value="男" checked>
+        男
+        <input type="radio" name="gender" value="女">
+        女
+    </div>
+    <div>
+        <label>选择你的爱好：</label>
+        <input type="checkbox" name="hobby[]" value="dance">跳舞
+        <input type="checkbox" name="hobby[]" value="tour">旅游
+        <input type="checkbox" name="hobby[]" value="sing">唱歌
+        <input type="checkbox" name="hobby[]" value="dance">打球
+    </div>
+    <div>
+        <input type="submit" value="提交" name="mysubmit" id="mysubmit" >
+    </div>
+</form>
+<form action="checkForm.php" method="post" id="JCForm2">
+    <div>
+        <label for="email2"> 身份证：</label>
+        <input type="text" name="IdCard" id="IdCard" class="typetext required">
+        <div id="IdCard-pop" class="ui-register-poptip-box" style="display: inline-block;">
+            <div class="ui-poptip">
+                <i id="IdCard-tip" class="iconfont"></i>
+                <b id="IdCard-b">必填</b>
+            </div>
+        </div>
+    </div>
+    <div>
+        <label for="psw2"> 密码：</label>
+        <input type="password" name="psw2" id="psw2" class="typepsw required">
+        <div id="psw2-pop" class="ui-register-poptip-box" style="display: inline-block;">
+            <div class="ui-poptip">
+                <i id="psw2-tip" class="iconfont"></i>
+                <b id="psw2-b">6-12位字符</b>
+            </div>
+        </div>
+    </div>
+    <div>
+        <input type="submit" value="登录" name="mysubmit" >
+    </div>
+</form>
+<script type="text/JavaScript" src="../../src/plug-in/validateform.js"></script>
+<script type="text/JavaScript" src="../../src/plug-in/inputsuggest.js"></script>
+<script type="text/JavaScript" src="../../src/plug-in/strengthchack.js"></script>
+<script language="javascript">
+
+/*实例化表单验证*/
+var checkMe = new Validateform('JCForm');
+
+var options2 = {
+    IdCard:[/^\d{17}(\d|x)$/,'isNumber', '身份证不正确'],
+    psw2:[/^.{6,12}$/,'', '6-12位字符222']
+};
+var checkMe2 = new Validateform('JCForm2', options2);
+
+
+/*实例化自动补齐*/
+window.onload = function(){
+    var sinaSuggest = new InputSuggest({
+        input: document.getElementById('email'),
+        data: ['','sina.cn','sina.com','vip.sina.com.cn','2008.sina.com','263.sina.com']
+    });
+};
+
+/*实例化密码强弱*/
+var mystrengthChack= new StrengthChack("psw");
+
+
+</script>
+</body>
+</html>
+
+

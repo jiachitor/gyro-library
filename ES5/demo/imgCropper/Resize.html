@@ -1,0 +1,100 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>拖拉缩放效果</title>
+<style type="text/css">
+#rRightDown,#rLeftDown,#rLeftUp,#rRightUp,#rRight,#rLeft,#rUp,#rDown{
+	position:absolute;
+	background:#C00;
+	width:7px;
+	height:7px;
+	z-index:5;
+	font-size:0;
+}
+
+#rLeftDown,#rRightUp{cursor:ne-resize;}
+#rRightDown,#rLeftUp{cursor:nw-resize;}
+#rRight,#rLeft{cursor:e-resize;}
+#rUp,#rDown{cursor:n-resize;}
+
+#rLeftDown{left:-4px;bottom:-4px;}
+#rRightUp{right:-4px;top:-4px;}
+#rRightDown{right:-4px;bottom:-4px;background-color:#00F;}
+#rLeftUp{left:-4px;top:-4px;}
+#rRight{right:-4px;top:50%;margin-top:-4px;}
+#rLeft{left:-4px;top:50%;margin-top:-4px;}
+#rUp{top:-4px;left:50%;margin-left:-4px;}
+#rDown{bottom:-4px;left:50%;margin-left:-4px;}
+
+#bgDiv{width:600px; height:300px; border:10px solid #666666; position:relative;}
+#dragDiv{border:1px solid #000000; width:100px; height:60px; top:50px; left:50px; background:#fff;}
+</style>
+</head>
+<body>
+	<div id="bgDiv">
+		<div id="dragDiv">
+			<div id="rRightDown"> </div>
+			<div id="rLeftDown"> </div>
+			<div id="rRightUp"> </div>
+			<div id="rLeftUp"> </div>
+			<div id="rRight"> </div>
+			<div id="rLeft"> </div>
+			<div id="rUp"> </div>
+			<div id="rDown"></div>
+		</div>
+	</div>
+	<input id="idScale" type="button" value="设置比例" />
+	<input id="idMin" type="button" value="设置最小范围" />
+</body>
+</html>
+<script type="text/javascript" src="../../src/plug-in/resize.js"></script>
+<script type="text/javascript" src="../../src/plug-in/drag.js"></script>
+<script>
+	var rs = new Resize("dragDiv", {
+		Max: true,
+		mxContainer: "bgDiv"
+	});
+
+	rs._Set("rRightDown", "right-down");
+	rs._Set("rLeftDown", "left-down");
+
+	rs._Set("rRightUp", "right-up");
+	rs._Set("rLeftUp", "left-up");
+
+	rs._Set("rRight", "right");
+	rs._Set("rLeft", "left");
+
+	rs._Set("rUp", "up");
+	rs._Set("rDown", "down");
+
+	document.getElementById("idScale").onclick = function() {
+		if (rs.Scale) {
+			this.value = "设置比例";
+			rs.Scale = false;
+		} else {
+			this.value = "取消比例";
+			rs.Ratio = 0;
+			rs.Scale = true;
+		}
+	};
+
+	document.getElementById("idMin").onclick = function() {
+		if (rs.Min) {
+			this.value = "设置最小范围";
+			rs.Min = false;
+		} else {
+			this.value = "取消最小范围";
+			rs.Min = true;
+		}
+	};
+
+</script>
+
+<script>
+	new Drag("dragDiv", {
+		Handle:"dragDiv",
+		Limit: true,
+		mxContainer: "bgDiv"
+	});
+</script>

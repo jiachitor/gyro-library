@@ -1206,7 +1206,7 @@ function animate(elem, attr, value, time, type, funcBefore, funcAfter, ID) {
         d = time, //总运行时间
         e = easing[type], //缓动类型
         m = c > 0 ? 'ceil' : 'floor', //取最大绝对值
-        setProperty = isOpacity ? 'setOpacity' : 'setAnimateStyle', //属性设置方法
+        setProperty = isOpacity ? setOpacity : setAnimateStyle, //属性设置方法
         origTime = (new Date) * 1, //原始时间值
         iID = ID ? ID : "JCL"; //计数器id
     animateID[iID] && window.cancelAnimationFrame(animateID[iID]);

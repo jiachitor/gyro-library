@@ -1,0 +1,317 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>图片延迟加载效果</title>
+<script type="text/javascript" src="../../src/plug-in/lazyload.js"></script>
+<script type="text/javascript">
+
+	var Browser = (function(ua) {
+    var b = {
+        msie: /msie/.test(ua) && !/opera/.test(ua),
+        opera: /opera/.test(ua),
+        safari: /webkit/.test(ua) && !/chrome/.test(ua),
+        firefox: /firefox/.test(ua),
+        chrome: /chrome/.test(ua)
+    };
+    var vMark = "";
+    for (var i in b) {
+        if (b[i]) {
+            vMark = "safari" == i ? "version" : i;
+            break;
+        };
+    };
+    b.version = vMark && RegExp("(?:" + vMark + ")[\\/: ]([\\d.]+)").test(ua) ? RegExp.$1 : "0";
+    b.ie = b.msie;
+    b.ie6 = b.msie && parseInt(b.version, 10) == 6;
+    b.ie7 = b.msie && parseInt(b.version, 10) == 7;
+    b.ie8 = b.msie && parseInt(b.version, 10) == 8;
+    b.ie9 = b.msie && parseInt(b.version, 10) == 9;
+    b.ie10 = b.msie && parseInt(b.version, 10) == 10;
+    return b;
+})(window.navigator.userAgent.toLowerCase());
+	
+	function extend(destination, source, override) {
+		if (override === undefined) override = true;
+		for (var property in source) {
+			if (override || !(property in destination)) {
+				destination[property] = source[property];
+			};
+		};
+		return destination;
+	};
+
+	function wrapper(childelem, parent) {
+    var ins = function() {
+        childelem.apply(this, arguments);
+    };
+    var subclass = function() {};
+    subclass.prototype = parent.prototype;
+    ins.prototype = new subclass;
+    return ins;
+};
+
+function bindFunction(object, fun) {
+		var args = Array.prototype.slice.call(arguments, 2);
+		return function() {
+			return fun.apply(object, args.concat(Array.prototype.slice.call(arguments)));
+		};
+	};
+
+function fixEvent(event) {
+		if (event) return event;
+		event = window.event;
+		event.target = event.srcElement;
+		event.stopPropagation = stopPropagation;
+		event.preventDefault = preventDefault;
+		var relatedTarget = {
+			"mouseout": event.toElement,
+			"mouseover": event.fromElement
+		}[event.type];
+		if (relatedTarget) {
+			event.relatedTarget = relatedTarget;
+		};
+		return event;
+	};
+
+	function bindAsEventListener(object, fun) {
+		var args = Array.prototype.slice.call(arguments).slice(2);
+		//对于apply和call两者在作用上是相同的，但两者在参数上有区别的。 
+		//对于第一个参数意义都一样，但对第二个参数： apply传入的是一个参数数组，也就是将多个参数组合成为一个数组传入，而call则作为call的参数传入（从第二个参数开始）。 
+		//如 func.call(func1,var1,var2,var3)对应的apply写法为：func.apply(func1,[var1,var2,var3])
+		return function(event) {
+			return fun.apply(object, [fixEvent(event)].concat(args)); //concat() 方法用于连接两个或多个数组。
+		};
+	};
+
+	function each(object, callback) {
+		if (undefined === object.length) {
+			for (var name in object) {
+				if (false === callback(object[name], name, object)) break;
+			}
+		} else {
+			for (var i = 0, len = object.length; i < len; i++) {
+				if (i in object) {
+					if (false === callback(object[i], i, object)) break;
+				}
+			}
+		};
+	};
+
+	function filter(object, callback, thisp) {
+		var ret = [];
+		each(object,
+			function(item) {
+				callback.apply(thisp, arguments) && ret.push(item);
+			});
+		return ret;
+	};
+
+
+
+
+</script>
+<script>
+(function(){
+	ImagesLazyLoad = wrapper(function(options) {
+		this._initialize(options);
+		//如果没有元素就退出
+		if (this.isFinish()) return;
+		//初始化模式设置
+		this._initMode();
+		//进行第一次触发
+		this.resize(true);
+	},LazyLoad);
+
+	extend(ImagesLazyLoad.prototype, {
+		//初始化程序
+		_initialize: function(options) {
+			LazyLoad.prototype._initialize.call(this, [], options);
+			//设置子类属性
+			var opt = this.options;
+			this.onLoad = opt.onLoad;
+			var attribute = this._attribute = opt.attribute;
+			//设置加载图片集合
+			var getSrc = opt.getSrc,
+			imgFilter = bindFunction(this, this._filter, opt["class"], getSrc ?
+			function(img) {
+				return getSrc(img);
+			}: function(img) {
+				return img.getAttribute(attribute) || img.src;
+			},
+			opt.holder);
+			this._elems = filter(
+			opt.images || this._container.getElementsByTagName("img"), imgFilter);
+			//判断属性是否已经加载的方法
+			this._hasAttribute = Browser.ie6 || Browser.ie7 ?
+			function(img) {
+				return attribute in img;
+			}: function(img) {
+				return img.hasAttribute(attribute);
+			};
+		},
+		//设置默认属性
+		_setOptions: function(options) {
+			return LazyLoad.prototype._setOptions.call(this, extend({ //默认值
+				images: undefined,//图片集合
+				attribute: "_lazysrc",//保存原图地址的自定义属性
+				holder: "",//占位图
+				"class": "",//筛选样式
+				getSrc: undefined,//获取原图地址程序
+				onLoad: function() {} //加载时执行
+			},
+			extend(options, {
+				onLoadData: this._onLoadData
+			})));
+		},
+		//筛选整理图片对象
+		_filter: function(className, getSrc, holder, img) {
+			if (className && (" " + img.className + " ").indexOf(" " + className + " ") == -1) return false; //排除样式不对应的
+			//获取原图地址
+			var src = getSrc(img);
+			if (!src) return false; //排除src不存在的
+			if (src == img.src) {
+				//排除已经加载或不能停止加载的
+				if (img.complete || Browser.chrome || Browser.safari) return false;
+				img.removeAttribute("src"); //移除src
+			};
+			if (holder) {
+				img.src = holder;
+			};
+			//用自定义属性记录原图地址
+			img.setAttribute(this._attribute, src);
+			return true;
+		},
+		//显示图片
+		_onLoadData: function(img) {
+			var attribute = this._attribute;
+			if (this._hasAttribute(img)) {
+				img.src = img.getAttribute(attribute);
+				img.removeAttribute(attribute);
+				this.onLoad(img);
+			};
+		}
+	});
+})();
+</script>
+</head>
+<body>
+	<style>
+		.lazy{ width:600px;overflow:scroll;border:1px solid #ccc;} .lazy table{border-collapse:collapse;}
+		.lazy td{border:1px solid #ccc;text-align:center;padding:20px;background:#FFF;}
+		#idLazyContainer{height:160px;overflow-y:hidden; position:relative;} #idLazyContainer
+		img{width:140px;height:100px;background:url('http://www.cnblogs.com/images/cnblogs_com/cloudgamer/169629/o_loading.gif')
+		no-repeat center; border:0;}
+	</style>
+	图片延迟加载：共有图片
+	<input id="idTotal" type="text" size="3" maxlength="2" value="50" />
+	张，未载入
+	<span id="idShow">
+	</span>
+	张
+	<input id="idReset" type="button" value="重新开始" />
+	<input id="idAuto" type="button" value="自动播放" />
+	<input id="idPos" type="button" value="位置改变" />
+	<div class="lazy" id="idLazyContainer" style="position:relative">
+		<table cellspacing="0" cellpadding="0">
+			<tr id="idLazy">
+				<td>
+					<a href="http://www.cnblogs.com/cloudgamer/archive/2009/12/22/ImagePreview.html">
+						<img _lazysrc="http://images.cnblogs.com/cnblogs_com/cloudgamer/143727/r_song1.jpg"
+						alt="图片上传预览" />
+					</a>
+				</td>
+				<td>
+					<a href="http://www.cnblogs.com/cloudgamer/archive/2009/08/10/FixedMenu.html">
+						<img _lazysrc="http://images.cnblogs.com/cnblogs_com/cloudgamer/143727/r_song2.jpg"
+						alt="多级联动菜单" />
+					</a>
+				</td>
+				<td>
+					<a href="http://www.cnblogs.com/cloudgamer/archive/2009/07/07/FixedTips.html">
+						<img _lazysrc="http://images.cnblogs.com/cnblogs_com/cloudgamer/143727/r_song3.jpg"
+						alt="浮动定位提示" />
+					</a>
+				</td>
+				<td>
+					<a href="http://www.cnblogs.com/cloudgamer/archive/2010/02/01/LazyLoad.html">
+						<img _lazysrc="http://images.cnblogs.com/cnblogs_com/cloudgamer/143727/r_song4.jpg"
+						alt="数据延迟加载" />
+					</a>
+				</td>
+				<td>
+					<a href="http://www.cnblogs.com/cloudgamer/archive/2009/12/01/Quick_Upload.html">
+						<img _lazysrc="http://images.cnblogs.com/cnblogs_com/cloudgamer/143727/r_song5.jpg"
+						alt="简便文件上传" />
+					</a>
+				</td>
+			</tr>
+		</table>
+	</div>
+<script>
+	var row = document.getElementById("idLazy"),
+	msg = document.getElementById("idShow"),
+	total = document.getElementById("idTotal"),
+	cells = [];
+	for (var i = 0, n = row.cells.length; i < n; cells.push(row.cells[i++])) {};
+
+	function Lazy() {
+		while (row.firstChild) {
+			row.removeChild(row.firstChild);
+		};
+		for (var i = 0, n = total.value | 0; i < n; i++) { //加上随机参数防止缓存影响效果
+			var img = row.appendChild(cells[0].cloneNode(true)).getElementsByTagName("img")[0];
+			img.setAttribute("_lazysrc", img.getAttribute("_lazysrc") + "?" + Math.random());
+			cells.push(cells.shift());
+		};
+		msg.innerHTML = i;
+		var lazy = new ImagesLazyLoad({
+			container: "idLazyContainer",
+			mode: "horizontal",
+			holder: "http://www.cnblogs.com/images/cnblogs_com/cloudgamer/169629/o_dot.gif",
+			onLoad: function(img) {
+				msg.innerHTML = --i;
+			}
+		});
+		document.getElementById("idReset").onclick = function() {
+			lazy.dispose();
+			Lazy();
+		};
+		document.getElementById("idPos").onclick = function() {
+			with(document.getElementById("idLazyContainer").style) {
+				if (width == "300px") {
+					left = 0;
+					width = "600px";
+				} else {
+					left = width = "300px";
+				}
+			}
+			lazy.resize(true);
+		};
+	}
+
+	Lazy();
+	total.onchange = Lazy;
+
+	var timer;
+	document.getElementById("idAuto").onclick = function() {
+		clearInterval(timer);
+		if (this.value == "自动播放") {
+			timer = setInterval(Scroll, 50);
+			this.value = "停止播放"
+		} else {
+			this.value = "自动播放";
+		}
+	}
+	function Scroll() {
+		var container = document.getElementById("idLazyContainer"),
+		bak = container.scrollLeft;
+		container.scrollLeft += 50;
+		if (container.scrollLeft == bak) {
+			clearInterval(timer);
+			document.getElementById("idAuto").value = "自动播放";
+		}
+	}
+</script>
+</body>
+</html>

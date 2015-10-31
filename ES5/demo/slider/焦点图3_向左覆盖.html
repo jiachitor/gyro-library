@@ -1,0 +1,91 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>焦点图 - 向左覆盖</title>
+<style type="text/css">
+* { padding: 0; margin: 0; }
+li { list-style: none; }
+img { border: none; }
+body { background: #ecfaff; }
+.sliderBox{width: 960px; height: 300px;margin: 150px auto 0; }
+.ui-slider { position: relative;width: 470px; }
+/*大图片样式*/
+.ui-slider .ui-slider-content{ overflow:hidden;width: 470px; height: 150px;position: relative;}
+.ui-slider .ui-slider-content ul { position: relative; top: 0; left: 0; z-index: 1; }
+.ui-slider .ui-slider-content ul li { width: 470px; height: 150px; position:absolute; left:470px; z-index:1; }
+.ui-slider .ui-slider-content ul img { float: left; width: 470px; height: 150px; }
+/*序列号样式*/
+.ui-slider .ui-slider-dot ol { position: absolute; left: 200px; bottom: 5px; z-index: 5; }
+.ui-slider .ui-slider-dot ol li { float: left; margin-right: 3px; display: inline; cursor: pointer; background: #fcf2cf; border: 1px solid #f47500; padding: 2px 6px; color: #d94b01; font-family: arial; font-size: 12px; }
+.ui-slider .ui-slider-dot ol li.active { padding: 3px 8px; font-weight: bold; color: #ffffff; background: #ffb442; position: relative; bottom: 2px; }
+/*文本信息样式*/
+.ui-slider  .ui-slider-txt li{ display:none;}
+.ui-slider  .ui-slider-txt li.active{ display:block;}
+.ui-slider span { width: 20px; height: 20px; line-height: 20px; font-family: arial; color: #fff; text-align: center; font-weight: bold; background: #333; border: 1px solid #ccc; position: absolute; top: 60px; z-index: 2; cursor: pointer; }
+/*上一页下一页样式*/
+.ui-slider .ui-slider-prev { left: 10px; }
+.ui-slider .ui-slider-next { right: 10px; }
+/*略缩图样式*/
+.ui-slider .ui-slider-thumbnail{ z-index:2; position:absolute; top:150px; left:0px;height:100px; overflow:hidden;}
+.ui-slider .ui-slider-thumbnail p{color:#000; float:left; display:inline-block; *display:block; *zoom:1; height:90px; width:90px;}
+</style>
+</head>
+<body>
+<div class="sliderBox">
+    <div id="J_slider" class="ui-slider">
+        <div class="ui-slider-content">
+            <ul >
+                <li >
+                    <a href="javascript: void(0);">
+                        <img class="J_ui_content_pic" alt="广告一广告一广告一广告一广告" src="./images/img_01.jpg">
+                    </a>
+                </li>
+                <li >
+                    <a href="javascript: void(0);">
+                        <img class="J_ui_content_pic" alt="广告二广告二广告二广告二广告" src="./images/img_02.jpg">
+                    </a>
+                </li>
+                <li >
+                    <a href="javascript: void(0);">
+                        <img class="J_ui_content_pic" alt="广告三广告三广告三广告三广告" src="./images/img_03.jpg">
+                    </a>
+                </li>
+                <li >
+                    <a href="javascript: void(0);">
+                        <img class="J_ui_content_pic" alt="广告四广告四广告四广告四" src="./images/img_04.jpg">
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div  class="ui-slider-thumbnail">
+            <p><img width="80" height="45" src="./images/img_01.jpg"></p>
+            <p><img width="80" height="45" src="./images/img_02.jpg"></p>
+            <p><img width="80" height="45" src="./images/img_03.jpg"></p>
+            <p><img width="80" height="45" src="./images/img_04.jpg"></p>
+        </div>
+
+    </div>
+</div>
+<script type="text/javascript" src="../../src/plug-in/slider.js"></script>
+<script type="text/javascript">
+    var slider1 = new Slider({
+        targetElement: 'J_slider',//选择焦点图ID
+        pattern:['leftCover'],//选择动画风格
+        overORclick:'click',//鼠标触发方式
+        seamless:false,//是否无缝轮播
+        autoTimetof:true,//是否自动播放
+        autoMs:5000,//自动播放间隔时间
+        showMarkerText:false,//是否生成图片详细信息
+        showMarkerPics: false,//是否生成图片略缩图样式  2选1
+        picswORh:"height",// 获取略缩图的宽还是高
+        picNum:4,//显示略缩图的数目；
+        showMarkers: true,//是否生成图片序列号   2选1
+        showMarkersNum: false,//是否生成图片序列号数字
+        showControls: true//是否显示上一页与下一页
+    });
+
+</script>
+</body>
+</html>

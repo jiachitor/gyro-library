@@ -233,7 +233,7 @@ var mydrag1 = new Drag("J_gamelist", {
             this._SetOptions(options);
 
             this.Limit = !!this.options.Limit;
-            this.View = this.options.View;
+            this.View = this.options.View || false;
             this.mxLeft = parseInt(this.options.mxLeft);
             this.mxRight = parseInt(this.options.mxRight);
             this.mxTop = parseInt(this.options.mxTop);
@@ -339,7 +339,7 @@ var mydrag1 = new Drag("J_gamelist", {
                 this.mxBottom = Math.max(this.mxBottom, this.mxTop + this.Drag.offsetHeight);
                 //如果有容器必须设置position为relative或absolute来相对或绝对定位，并在获取offset之前设置
                 //当设置了容器，在Repair程序如果容器的position不是relative或absolute，会自动把position设为relative来相对定位
-                if (!this.options.View) {
+                if (!this.View) {
                     !this._mxContainer || curStyle(this._mxContainer).position == "relative" || curStyle(this._mxContainer).position == "absolute" || (this._mxContainer.style.position = "relative");
                 }
             }
@@ -381,6 +381,7 @@ var mydrag1 = new Drag("J_gamelist", {
                 //左(mxLeft)：left限制；
                 //右(mxRight)：left+offsetWidth限制
                 var rectContainer = rect(this._mxContainer);
+                var triggerCss = curStyle(this._mxContainer);
                 var mxLeft = this.mxLeft,
                     mxRight = this.mxRight,
                     mxTop = this.mxTop,
@@ -391,11 +392,10 @@ var mydrag1 = new Drag("J_gamelist", {
                 } else if (!!this._mxContainer) {
                     //对于左边上边要取更大的值，对于右边下面就要取更小的值
                     //由于是相对定位，对于容器范围来说范围参数上下左右的值分别是0、clientHeight、0、clientWidth。 clientWidth和clientHeight是容器可视部分的宽度和高度
-                    console.log(mxRight)
-                    mxLeft = Math.max(mxLeft, rectContainer.left);
-                    mxTop = Math.max(mxTop, rectContainer.top);
-                    mxRight = Math.min(mxRight, rectContainer.right);
-                    mxBottom = Math.min(mxBottom, rectContainer.bottom);
+                    mxLeft = Math.max(mxLeft, 0);
+                    mxTop = Math.max(mxTop, 0);
+                    mxRight = Math.min(mxRight, this._mxContainer.clientWidth);
+                    mxBottom = Math.min(mxBottom, this._mxContainer.clientHeight);
                 };
                 //修正移动参数,这里可以限制在一定范围里拖动
                 iLeft = Math.max(Math.min(iLeft, mxRight - this.Drag.offsetWidth), mxLeft);

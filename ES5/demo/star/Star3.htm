@@ -1,0 +1,137 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>星星评分效果</title>
+<style type="text/css">
+ul,li{margin:0;padding:0;border:0;}
+.myrating{height:25px;overflow:hidden;zoom:1;padding:2px 0;position:relative;z-index:999;font:12px Arial;color:#000;line-height:1.2em}
+.myrating span{height:23px;display:block;line-height:23px;float:left;}
+.myrating span.title{width:125px;text-align:right;margin-right:5px;}
+.myrating ul{float:left;}
+.myrating .result{margin-left:20px;padding-top:2px;}
+.myrating .result span{color:#ff6d02;}
+.myrating .rating-level,.myrating .rating-level a{background:url(o_star.png) no-repeat scroll 1000px 1000px;}
+.myrating .rating-level{background-position:0px 0px;width:120px;height:23px;position:relative;z-index:1000;}
+.myrating .myrating .result em{color:#f60;font-family:arial;font-weight:bold;}
+.myrating .rating-level li{display:inline;}
+.myrating .rating-level a{line-height:23px;height:23px;position:absolute;top:0px;left:0px;text-indent:-999em;*zoom:1;outline:none;}
+.myrating .rating-level a.one-star{width:20%;z-index:6;}
+.myrating .rating-level a.two-stars{width:40%;z-index:5;}
+.myrating .rating-level a.three-stars{width:60%;z-index:4;}
+.myrating .rating-level a.four-stars{width:80%;z-index:3;}
+.myrating .rating-level a.five-stars{width:100%;z-index:2;}
+.myrating .rating-level .current-rating,.myrating .rating-level a:hover{background-position:0 -28px}
+.myrating .rating-level a.one-star:hover,.myrating .rating-level a.two-stars:hover,.rating-level .myrating a.one-star.current-rating,.myrating .rating-level a.two-stars.current-rating{background-position:0 -116px;}
+.myrating .rating-level .three-stars .current-rating,.myrating .rating-level .four-stars ..myrating current-rating,.myrating .rating-level .five-stars .current-rating{background-position:0 -28px;}
+
+</style>
+</head>
+<body>
+<div class="myrating">
+	<span class="title">你对我人品的评价:</span>
+	<ul class="rating-level" id="stars">  <!--  star:value 为自定义的属性 -->
+		<li><a href="javascript:void(0);" class="one-star" star:value="20">20</a></li>
+		<li><a href="javascript:void(0);" class="two-stars" star:value="40">40</a></li>
+		<li><a href="javascript:void(0);" class="three-stars" star:value="60">60</a></li>
+		<li><a href="javascript:void(0);" class="four-stars" star:value="80">80</a></li>
+		<li><a href="javascript:void(0);" class="five-stars" star:value="100">100</a></li>
+	</ul>
+	<span id="stars-tips" class="result"></span>
+	<input type="hidden" id="stars-input" name="b" value="" size="2" />
+</div>
+<script>
+(function(){
+	
+	Star = function(starId,tipsId,inputId,options) {
+		this.id=starId;
+		this.tipsId=tipsId;
+		this.inputId=inputId;
+		this.options = options; 
+		this.init();
+		this.thisInfo = ''; 
+		this.thisCurcss = ''; 
+		this.thisstartvalue = ''; 
+		this.thisStep = '';
+	};
+	
+	Star.prototype ={
+		defConfig:{
+			info:['人品极差', '人品不咋地', '人品一般吧', '人品不错', '人品极好啊'],
+			curcss:' current-rating',
+			startvalue:3,
+			step:20
+		},
+		init:function () {
+			this.Stars();
+		},
+		S$:function(id) { 
+			return document.getElementById(id); 
+		},
+		S$$:function(r, t) {
+			return (r || document).getElementsByTagName(t); 
+		},
+		selective_value:function() {   //初始化数据
+			this.thisInfo = (this.options["info"] ? this.options["info"] : this.defConfig["info"]); 
+			this.thisCurcss = (this.options["curcss"] ? this.options["curcss"] : this.defConfig["curcss"]); 
+			this.thisstartvalue = (this.options["startvalue"] ? this.options["startvalue"] : this.defConfig["startvalue"]); 
+			this.thisStep = (this.options["step"] ? this.options["step"] : this.defConfig["info"]);
+		}, 
+		innerhtml:function(this_,curA,choose) {   //插入提示语
+		
+			this.selective_value();
+			var this_star=this.S$(this.inputId);
+			switch(choose) {
+				case 1:
+					var theone=curA;
+					var theindex=this.thisstartvalue;
+					break;
+				case 2:
+					var theone=curA;
+					var theindex=this_._val;
+					break;
+				case 3:
+					var theone=this.S$$(this_, 'a')[0];
+					var theindex=this_._val;
+					break;
+			}
+			this.S$(this.tipsId).innerHTML = '<em>' + (this_star.value=theone.getAttribute('star:value')) + '分</em> - ' + this.thisInfo[theindex];
+		},
+		Stars:function () {
+			this.selective_value();
+			var this_star=this.S$(this.inputId), lis = this.S$$(this.S$(this.id), 'li'),  that=this,star_a=this.S$$(this.S$(this.id), 'a'),curA=star_a[this.thisstartvalue];
+
+			that.innerhtml(this,curA,1);
+			curA.className += this.thisCurcss;
+			
+			for (var i = 0, len = lis.length; i < len; i++) {
+				lis[i]._val = i;
+				lis[i].onclick = function() {
+					that.innerhtml(this,curA,3);
+					curA = star_a[this_star.value / that.thisStep - 1]; 
+				};
+				lis[i].onmouseout = function() {
+					curA && (curA.className += that.thisCurcss); 
+					that.innerhtml(this,curA,2);
+				}
+				lis[i].onmouseover = function() {
+					that.innerhtml(this,curA,3);
+					curA && (curA.className = curA.className.replace(that.thisCurcss, ''));
+				}
+			} 
+		}
+	};
+	
+	
+	var options = {
+        info:['人品极差333', '人品不咋地333', '人品一般吧333', '人品不错333', '人品极好啊333'],
+		curcss:' current-rating',
+		/*startvalue:2,*/
+		step:20
+    };
+    var Star1 = new Star('stars','stars-tips','stars-input', options);
+
+})();
+</script>
+</body>
+</html>
