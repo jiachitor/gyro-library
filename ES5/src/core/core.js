@@ -1,5 +1,5 @@
 /*获取浏览器信息*/
-Browser = (function(ua) {
+var Browser = (function(ua) {
     var b = {
         msie: /msie/.test(ua) && !/opera/.test(ua),
         opera: /opera/.test(ua),
@@ -172,7 +172,7 @@ clearEvent(this);
 //该句是要调用的是 arguments 的slice 方法，就是因为 arguments 不是真的组数，它没有slice这个方法，
 //通过这么Array.prototype.slice.call调用，JS的内部机制应该是 把arguments对象转化为Array ，
 //因为Array.prototype.slice.call调用后，返回的是一个组数。此时的arguments数组就如[this, this._Start, fun],那么args就为fun
-function BindAsEventListener(object, fun) {
+function bindAsEventListener(object, fun) {
     var args = Array.prototype.slice.call(arguments).slice(2);
     //对于apply和call两者在作用上是相同的，但两者在参数上有区别的。 
     //对于第一个参数意义都一样，但对第二个参数： apply传入的是一个参数数组，也就是将多个参数组合成为一个数组传入，而call则作为call的参数传入（从第二个参数开始）。 
@@ -1067,7 +1067,7 @@ function each(object, callback) {
 
 //数组扩展
 //以每一个匹配的元素作为上下文来执行一个函数,将object传入callback,并可在回调函数中直接引用，thisp为this指针
-function forEach = (object, callback, thisp) {
+function forEach(object, callback, thisp) {
     each(object, function() {
         callback.apply(thisp, arguments);
     });

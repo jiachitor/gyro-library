@@ -4,9 +4,9 @@
   <head>
     <meta charset="utf-8">
     <title>Dialog 弹出层（信息提示框）效果</title>
-    <script type="text/javascript" src="../../src/core/core.js"></script>
-    <script type="text/javascript" src="../../src/plug-in/popping.js"></script>
-
+    <script type="text/javascript" src="../../src/plug-in/dialog.js"></script>
+    <script type="text/javascript" src="../../src/plug-in/overLay.js"></script>
+    <script type="text/javascript" src="../../src/plug-in/drag.js"></script>
   </head>
 
   <body style="width:900px; height:1000px; padding:100px;" id="idContainer">
@@ -44,6 +44,27 @@
         <input type="button" value=" 关闭 " id="idBoxClose" />
       </dd>
     </dl>
+    <script type="text/javascript">
+      function addEventListener(oTarget, sEventType, fnHandler) {
+          if (oTarget.addEventListener) {
+              oTarget.addEventListener(sEventType, fnHandler, false);
+          } else if (oTarget.attachEvent) {
+              oTarget.attachEvent("on" + sEventType, fnHandler);
+          } else {
+              oTarget["on" + sEventType] = fnHandler;
+          };
+      };
+
+      function removeEventListener(oTarget, sEventType, fnHandler) {
+          if (oTarget.removeEventListener) {
+              oTarget.removeEventListener(sEventType, fnHandler, false);
+          } else if (oTarget.detachEvent) {
+              oTarget.detachEvent("on" + sEventType, fnHandler);
+          } else {
+              oTarget["on" + sEventType] = null;
+          };
+      };
+    </script>
     <script>
       (function() {
         var ab = new Dialog({
@@ -62,15 +83,15 @@
         ab.onShow = function() {
           document.getElementById("idBoxTxt").select();
           if (lock) {
-            GLOBAL.Event.addEventListener(document, "keydown", lockup);
-            GLOBAL.Event.addEventListener(this.box, "keydown", lockout);
+            addEventListener(document, "keydown", lockup);
+            addEventListener(this.box, "keydown", lockout);
             OverLay.show();
           }
         }
         ab.onClose = function() {
           document.getElementById("idMsg").innerHTML = document.getElementById("idBoxTxt").value;
-          GLOBAL.Event.removeEventListener(document, "keydown", lockup);
-          GLOBAL.Event.removeEventListener(this.box, "keydown", lockout);
+          removeEventListener(document, "keydown", lockup);
+          removeEventListener(this.box, "keydown", lockout);
           OverLay.close();
         }
         document.getElementById("idBoxClose").onclick = function() {

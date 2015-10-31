@@ -4,7 +4,6 @@
   <head>
     <meta charset="utf-8">
     <title>拖放效果</title>
-    <link href="http://static.9xwan.com/www/css/reset.css" media="screen" rel="stylesheet" type="text/css" />
     <style>
       #idContainer {
         border: 10px solid #990000;
@@ -26,7 +25,6 @@
         overflow: hidden;
       }
     </style>
-    <script type="text/javascript" src="../../src/core/core.js"></script>
     <script type="text/javascript" src="../../src/plug-in/drag.js"></script>
   </head>
 
@@ -79,7 +77,8 @@
     drag.LockY = true;
   };
   document.getElementById("idLimit").onclick = function() {
-    drag.mxRight = drag.mxBottom = 200;
+    //drag.mxRight = drag.mxBottom = 200;
+    drag.View = false;
     drag.Limit = true;
   };
   document.getElementById("idLimitOff").onclick = function() {
