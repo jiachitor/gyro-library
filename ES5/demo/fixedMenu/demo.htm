@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>JavaScript 多级联动浮动菜单</title>
+<script type="text/javascript" src="../../src/plug-in/fixedmenu.js"></script>
+<script type="text/javascript">
+
+	function addEventListener(oTarget, sEventType, fnHandler) {
+        if (oTarget.addEventListener) {
+            oTarget.addEventListener(sEventType, fnHandler, false);
+        } else if (oTarget.attachEvent) {
+            oTarget.attachEvent("on" + sEventType, fnHandler);
+        } else {
+            oTarget["on" + sEventType] = fnHandler;
+        };
+    };
+
+    function removeEventListener(oTarget, sEventType, fnHandler) {
+        if (oTarget.removeEventListener) {
+            oTarget.removeEventListener(sEventType, fnHandler, false);
+        } else if (oTarget.detachEvent) {
+            oTarget.detachEvent("on" + sEventType, fnHandler);
+        } else {
+            oTarget["on" + sEventType] = null;
+        };
+    };
+
+	
+	function each(object, callback) {
+        if (undefined === object.length) {
+            for (var name in object) {
+                if (false === callback(object[name], name, object)) break;
+            }
+        } else {
+            for (var i = 0, len = object.length; i < len; i++) {
+                if (i in object) {
+                    if (false === callback(object[i], i, object)) break;
+                }
+            }
+        };
+    };
+
+    function forEach(object, callback, thisp) {
+        each(object, function() {
+            callback.apply(thisp, arguments);
+        });
+    };
+
+</script>
+</head>
+<body>
+<style type="text/css">
+.container1 {height:30px;}
+.container1 div {float:left;}
+.container1 div, .container1_2 div {width:100px;background:#FAFCFD;border:1px solid #5c9cc0;padding:10px;}
+div.on1 {font-weight:bold;background:#EEF3F7;}
+div.on1_2 {font-weight:bold;background:#fffff7;border:1px solid #ffcc00;}
+</style>
+菜单使用演示： <br>
+<br>
+<div id="idContainer1" class="container1"> </div>
+<div id="idContainer1_2" class="container1_2"> </div>
+<br>
+<select>
+	<option>-------------test-------------</option>
+</select>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<input id="idEdit" type="button" value="添加菜单 +"/>
+位置：
+<select id="idRank">
+	<option value="3"> 第四个 </option>
+	<option value="2"> 第三个</option>
+	<option value="1"> 第二个 </option>
+	<option value="0"> 第一个 </option>
+</select>
+<select id="idDelay">
+	<option value="1000"> 1秒</option>
+	<option value="500"> 0.5秒 </option>
+	<option value="200" selected> 0.2秒 </option>
+	<option value="0"> 不延时 </option>
+</select>
+<script>
+	var menu = [
+		{
+			id: 1,
+			parent: 0,
+			html: '自定义样式',
+			hover: "on1_2",
+			rank: 1
+		},
+		{
+			id: 2,
+			parent: 0,
+			html: '下拉菜单',
+			active: "on1_2",
+			rank: 2
+		},
+		{
+			id: 3,
+			parent: 0,
+			html: '任意定位',
+			relative: {
+				align: "left"
+			},
+			rank: 3
+		},
+		{
+			id: 11,
+			parent: 1,
+			html: '点击关闭',
+			hover: "on1_2",
+			property: {
+				onclick: function() {
+					fm.hide();
+				}
+			}
+		},
+		{
+			id: 21,
+			parent: 2,
+			html: '相对容器',
+			active: "on1_2",
+			relContainer: true
+		},
+		{
+			id: 22,
+			parent: 2,
+			html: '相对菜单',
+			active: "on1_2",
+			relative: {
+				align: "right",
+				vAlign: "clienttop"
+			}
+		},
+		{
+			id: 23,
+			parent: 21,
+			html: '三级菜单'
+		},
+		{
+			id: 24,
+			parent: 21,
+			html: '三级菜单'
+		},
+		{
+			id: 25,
+			parent: 22,
+			html: '三级菜单'
+		},
+		{
+			id: 26,
+			parent: 22,
+			html: '三级菜单'
+		},
+		{
+			id: 31,
+			parent: 3,
+			html: '无法到达的',
+			relative: {
+				align: "left"
+			}
+		},
+		{
+			id: 32,
+			parent: 31,
+			html: '目光',
+			relative: {
+				align: "right"
+			}
+		},
+		{
+			id: 33,
+			parent: 32,
+			html: '无法到达的',
+			relative: {
+				align: "right",
+				vAlign: "top"
+			}
+		},
+		{
+			id: 34,
+			parent: 33,
+			html: '到达',
+			relative: {
+				percentTop: 100
+			}
+		},
+		{
+			id: 35,
+			parent: 34,
+			html: '到达',
+			relative: {
+				align: "left",
+				vAlign: "clienttop",
+				percentLeft: -100
+			}
+		},
+		{
+			id: 36,
+			parent: 35,
+			html: '梦想',
+			relative: {
+				vAlign: "top"
+			}
+		},
+		{
+			id: 37,
+			parent: 36,
+			html: '目光',
+			relative: {
+				vAlign: "top",
+				percentTop: -100
+			}
+		},
+		{
+			id: 38,
+			parent: 37,
+			html: '脚步',
+			relative: {
+				align: "right",
+				vAlign: "clienttop",
+				percentLeft: 100
+			}
+		},
+		{
+			id: 39,
+			parent: 38,
+			html: '地方',
+			relative: {
+				percentTop: 100
+			}
+		},
+		{
+			id: 40,
+			parent: 39,
+			html: '地方',
+			relative: {
+				align: "left"
+			}
+		},
+		{
+			id: 41,
+			parent: 40,
+			html: '可以',
+			relative: {
+				vAlign: "top",
+				percentTop: -100
+			}
+		},
+		{
+			id: 42,
+			parent: 41,
+			html: '可以'
+		}
+	];
+
+	var fm = new FixedMenu(["idContainer1", "idContainer1_2"], {
+		hover: "on1",
+		menu: menu
+	});
+
+	//编辑测试
+	document.getElementById("idEdit").onclick = function() {
+		if (this.value == "添加菜单 +") {
+			fm.add([{
+				id: 100,
+				parent: 0,
+				html: '新加菜单+',
+				rank: document.getElementById("idRank").value | 0
+			},
+			{
+				id: 101,
+				parent: 100,
+				html: '新加菜单++'
+			},
+			{
+				id: 102,
+				parent: 100,
+				html: '新加菜单+++'
+			}]);
+			this.value = "删除菜单 -"
+		} else {
+			fm.del(100, 101, 102);
+			this.value = "添加菜单 +"
+		};
+	};
+
+	//延时测试
+	document.getElementById("idDelay").onchange = function() {
+		fm.Delay = this.value | 0;
+	};
+</script>
+<br>
+<br>
+仿京东商城商品分类菜单： <br>
+<br>
+<style type="text/css">
+.container2, .container2 dd, .container2_2 dl, .container2_2 dd {margin:0;}
+
+.container2 {font-size:14px;width:190px;border:1px solid #cf2020;background:#fffff5;padding:5px 8px; line-height:30px; color:#333;}
+.container2 dt {font-weight:bold;color:#cf2020;}
+.container2 dd {background:url(http://www.cnblogs.com/images/cnblogs_com/cloudgamer/143727/n4.jpg) 180px 10px no-repeat;_zoom:1;}
+
+.container2_2 {background-color:#bebec3; display:none;}
+.container2_2 dl {font-size:14px;width:200px;border:1px solid #969696;background:#fff; position:relative; left:-3px; top:-3px; }
+.container2_2 dd div {padding:5px 20px; background:url(http://www.cnblogs.com/images/cnblogs_com/cloudgamer/143727/n4.jpg) 6px 7px no-repeat;_zoom:1;}
+.container2_2 dt, .shadow {padding:0 5px; position:absolute;background:#fff; border:1px solid #969696; border-right:0;width:169px;left:-180px; top:-1px;height:24px;line-height:24px;}
+.shadow {background-color:#bebec3;border-color:#bebec3; top:0;}
+
+.container2_2 a{display:block;_zoom:1;}
+.container2_2 a:link, .container2_2 a:visited, .container2_2 a:active {color:#333;text-decoration: none;}
+.container2_2 a:hover {color:#ff6026;text-decoration: underline;}
+</style>
+<dl id="idContainer2" class="container2">
+	<dt id="idMenu2_1">图片动画</dt>
+	<dd id="idMenu2_2">图片效果</dd>
+	<dd id="idMenu2_3">动画效果</dd>
+	<dt id="idMenu2_51">系统其他</dt>
+	<dd id="idMenu2_52">系统效果</dd>
+	<dd id="idMenu2_53">其他效果</dd>
+</dl>
+<div id="idContainer2_2" class="container2_2">
+	<div class="shadow"></div>
+	<dl>
+		<dt id="idTitle"></dt>
+		<dd id="idMenu2">
+			<div id="idMenu2_11"><a href="2008/07/06/SlideTrans.html">图片滑动切换效果</a></div>
+			<div id="idMenu2_12"><a href="2008/05/23/1205642.html">图片变换效果(ie only)</a></div>
+			<div id="idMenu2_13"><a href="2008/05/13/1194272.html">图片滑动展示效果</a></div>
+			<div id="idMenu2_14"><a href="2008/07/21/ImgCropper.html">图片切割效果</a></div>
+			<div id="idMenu2_21"><a href="2009/01/06/Tween.html">Tween算法及缓动效果</a></div>
+			<div id="idMenu2_22"><a href="2008/08/27/1277131.html">渐变效果</a></div>
+			<div id="idMenu2_61"><a href="2008/10/20/1314766.html">无刷新多文件上传系统</a></div>
+			<div id="idMenu2_62"><a href="2008/10/05/ImgCropper_sys.html">图片切割系统</a></div>
+			<div id="idMenu2_71"><a href="2008/11/17/Drag.html">拖放效果</a></div>
+			<div id="idMenu2_72"><a href="2008/12/03/Resize.html">拖拉缩放效果</a></div>
+			<div id="idMenu2_73"><a href="2008/12/24/Slider.html">滑动条效果</a></div>
+		</dd>
+	</dl>
+</div>
+<script>
+	var menu2 = [{
+		id: 1,  //id是菜单的唯一标识
+		parent: 0,  //parent是父级菜单的id
+		elem: 'idMenu2_1'
+	},
+	{
+		id: 2,
+		parent: 0,
+		elem: 'idMenu2_2'
+	},
+	{
+		id: 3,
+		parent: 0,
+		elem: 'idMenu2_3'
+	},
+	{
+		id: 11,
+		parent: 2,
+		elem: 'idMenu2_11'
+	},
+	{
+		id: 12,
+		parent: 2,
+		elem: 'idMenu2_12'
+	},
+	{
+		id: 13,
+		parent: 2,
+		elem: 'idMenu2_13'
+	},
+	{
+		id: 14,
+		parent: 2,
+		elem: 'idMenu2_14'
+	},
+	{
+		id: 21,
+		parent: 3,
+		elem: 'idMenu2_21'
+	},
+	{
+		id: 22,
+		parent: 3,
+		elem: 'idMenu2_22'
+	},
+	{
+		id: 51,
+		parent: 0,
+		elem: 'idMenu2_51'
+	},
+	{
+		id: 52,
+		parent: 0,
+		elem: 'idMenu2_52'
+	},
+	{
+		id: 53,
+		parent: 0,
+		elem: 'idMenu2_53'
+	},
+	{
+		id: 61,
+		parent: 52,
+		elem: 'idMenu2_61'
+	},
+	{
+		id: 62,
+		parent: 52,
+		elem: 'idMenu2_62'
+	},
+	{
+		id: 71,
+		parent: 53,
+		elem: 'idMenu2_71'
+	},
+	{
+		id: 72,
+		parent: 53,
+		elem: 'idMenu2_72'
+	},
+	{
+		id: 73,
+		parent: 53,
+		elem: 'idMenu2_73'
+	}];
+
+	var container2 = ["idContainer2", {
+		id: "idContainer2_2",
+		menu: "idMenu2"
+	}];
+
+	new FixedMenu(container2, {
+		menu: menu2,
+		relative: {
+			align: "clientleft",
+			vAlign: "clienttop",
+			customTop: 5,
+			customLeft: 176
+		},
+		onBeforeShow: function(container, menu) {
+			document.getElementById("idTitle").innerHTML = menu._elem.innerHTML;
+		}
+	});
+</script>
+<br>
+仿window xp右键菜单： <br>
+<style type="text/css">
+.container3 {font-size:12px;border:1px solid #9d9da1;padding:3px;line-height:18px; background:#FFF; cursor:default;-moz-user-select:none;_overflow:hidden;}
+.container3 div {padding:0 20px;}
+
+.menu3_1 {color:#aca899;_zoom:1;}
+.menu3_2 {background:url(http://images.cnblogs.com/cnblogs_com/cloudgamer/169629/o_menu.gif) 133px 0 no-repeat;}
+.menu3_2_on {background-position:133px -18px;}
+.menu3_3 {background:url(http://images.cnblogs.com/cnblogs_com/cloudgamer/169629/o_menu.gif) left -36px no-repeat;}
+.menu3_3_on {background-position:left -54px;}
+.menu3_4 {background:url(http://images.cnblogs.com/cnblogs_com/cloudgamer/169629/o_menu.gif) left -72px no-repeat;}
+.menu3_4_on {background-position:left -90px;}
+
+.line3 {border-bottom:1px solid #aca899; _font-size:0; margin:4px 0;}
+.on3 {background-color:#316ac5;color:#FFF;}
+
+.area3 { width:500px; height:200px;border:1px solid #aca899;}
+.pos3 {position:absolute; display:none;width:150px;}
+</style>
+<div id="idArea" class="area3"> </div>
+<div id="idContainer3" class="container3 pos3"> </div>
+<div id="idContainer3_2" class="container3"> </div>
+<script>
+	var menu3 = [{
+		id: 1,
+		parent: 0,
+		html: '查看(<u>V</u>)'
+	},
+	{
+		id: 2,
+		parent: 0
+	},
+	{
+		id: 3,
+		parent: 0,
+		html: '排列图标(<u>I</u>)'
+	},
+	{
+		id: 4,
+		parent: 0,
+		html: '刷新(<u>E</u>)'
+	},
+	{
+		id: 5,
+		parent: 0
+	},
+	{
+		id: 6,
+		parent: 0,
+		html: '自定义文件夹(<u>F</u>)...'
+	},
+	{
+		id: 7,
+		parent: 0
+	},
+	{
+		id: 8,
+		parent: 0,
+		html: '粘贴(<u>P</u>)'
+	},
+
+	{
+		id: 9,
+		parent: 0,
+		html: '粘贴快捷方式(<u>S</u>)'
+	},
+	{
+		id: 10,
+		parent: 0
+	},
+	{
+		id: 11,
+		parent: 0,
+		html: '新建(<u>P</u>)'
+	},
+	{
+		id: 12,
+		parent: 0
+	},
+	{
+		id: 13,
+		parent: 0,
+		html: '属性(<u>S</u>)'
+	},
+	{
+		id: 21,
+		parent: 1,
+		html: '缩略图(<u>H</u>)'
+	},
+	{
+		id: 22,
+		parent: 1,
+		html: '平铺(<u>S</u>)',
+		css: "menu3_3",
+		hover: "menu3_3 menu3_3_on on3"
+	},
+	{
+		id: 23,
+		parent: 1,
+		html: '图标(<u>N</u>)'
+	},
+	{
+		id: 24,
+		parent: 1,
+		html: '列表(<u>L</u>)'
+	},
+	{
+		id: 25,
+		parent: 1,
+		html: '详细信息(<u>D</u>)'
+	},
+	{
+		id: 31,
+		parent: 3,
+		html: '名称(<u>N</u>)',
+		css: "menu3_3",
+		hover: "menu3_3 menu3_3_on on3"
+	},
+	{
+		id: 32,
+		parent: 3,
+		html: '类型(<u>S</u>)'
+	},
+	{
+		id: 33,
+		parent: 3,
+		html: '大小(<u>T</u>)'
+	},
+	{
+		id: 34,
+		parent: 3,
+		html: '修改时间(<u>M</u>)'
+	},
+	{
+		id: 35,
+		parent: 3
+	},
+	{
+		id: 36,
+		parent: 3,
+		html: '按组排列(<u>G</u>)',
+		css: "menu3_4",
+		hover: "menu3_4 menu3_4_on on3"
+	},
+	{
+		id: 37,
+		parent: 3,
+		html: '自动排列(<u>A</u>)'
+	},
+	{
+		id: 38,
+		parent: 3,
+		html: '对齐到网格(<u>L</u>)'
+	},
+	{
+		id: 41,
+		parent: 11,
+		html: 'Dialog 弹出层效果',
+		href: "2010/10/11/Dialog.html"
+	},
+	{
+		id: 42,
+		parent: 11,
+		html: '图片3D展示空间',
+		href: "2010/09/20/Image3D.html"
+	},
+	{
+		id: 43,
+		parent: 11,
+		html: '图片变换效果',
+		href: "2010/08/16/ImageTrans.html"
+	},
+	{
+		id: 44,
+		parent: 11,
+		html: '图片滑动展示效果',
+		href: "2010/07/29/SlideView.html"
+	}];
+
+	forEach(menu3,
+	function(menu) {
+		var id = menu.id | 0;
+		switch (id) {
+		case 1:
+		case 3:
+		case 11:
+			//有下级菜单
+			menu.css = "menu3_2";
+			menu.hover = "menu3_2 menu3_2_on on3";
+			break;
+		case 2:
+		case 5:
+		case 7:
+		case 10:
+		case 12:
+		case 35:
+			//分割线
+			menu.css = menu.hover = "line3";
+			break;
+		case 8:
+		case 9:
+			//不能选择
+			menu.css = menu.hover = "menu3_1";
+			break;
+		case 4:
+			//刷新
+			menu.property = {
+				onmouseup: function() {
+					location.reload();
+				}
+			};
+			break;
+		case 21:
+		case 22:
+		case 23:
+		case 24:
+		case 25:
+			//"查看"子菜单
+			menu.property = {
+				onmouseup: function() {
+					Select([21, 22, 23, 24, 25], id, "menu3_3", "menu3_3 menu3_3_on on3");
+				}
+			};
+			break;
+		case 31:
+		case 32:
+		case 33:
+		case 34:
+			//"排列图标"子菜单1
+			menu.property = {
+				onmouseup: function() {
+					Select([31, 32, 33, 34], id, "menu3_3", "menu3_3 menu3_3_on on3");
+				}
+			};
+			break;
+		case 36:
+		case 37:
+		case 38:
+			//"排列图标"子菜单2
+			menu.property = {
+				onclick: function() {
+					Select([36, 37, 38], id, "menu3_4", "menu3_4 menu3_4_on on3");
+				}
+			};
+			break;
+		case 41:
+		case 42:
+		case 43:
+		case 44:
+			menu.property = {
+				onclick: function() {
+					location.href = menu.href;
+				}
+			};
+			break;
+		}
+	});
+
+	var fm3 = new FixedMenu(["idContainer3", "idContainer3_2"], {
+		menu: menu3,
+		delay: 0,
+		hover: "on3",
+		relative: {
+			align: "right",
+			vAlign: "clienttop",
+			customTop: -4,
+			customLeft: -2,
+			adaptive: true,
+			reset: true
+		}
+	});
+
+	var area = document.getElementById("idArea"),
+	container3 = document.getElementById("idContainer3"),
+	container3_2 = document.getElementById("idContainer3_2");
+
+	function Hide() {
+		fm3.hide();
+		container3.style.display = "none";
+	};
+
+	function Select(group, id, css, hover) {
+		Hide();
+		var menu = [];
+		forEach(group,
+		function(i) {
+			i !== id && menu.push({
+				"id": i,
+				"css": "",
+				"hover": "on3"
+			});
+		});
+		menu.push({
+			"id": id,
+			"css": css,
+			"hover": hover
+		});
+		fm3.edit(menu);
+	};
+
+	addEventListener(area, "contextmenu",
+	function(e) {
+		with(container3.style) {
+			left = e.pageX + "px";
+			top = e.pageY + "px";
+			display = "block";
+		}
+		e.preventDefault();
+	});
+
+	container3.oncontextmenu = container3_2.oncontextmenu = function(e) {
+		$$E.fixEvent(e).preventDefault();
+	};
+	container3.onselectstart = container3_2.onselectstart = function() {
+		return false;
+	} ;//ie chrome safari
+	addEventListener(container3, "mouseup",
+	function(e) {
+		e.stopPropagation();
+	});
+	addEventListener(document, "mouseup", Hide);
+	addEventListener(window, "blur", Hide);
+</script>
+<br>
+仿淘宝拼音索引菜单： <br>
+<br>
+<style type="text/css">
+.container4 li, .container4_2 li{ list-style:none;}
+.container4 ul, .container4_2{margin:0;}
+
+.container4 {width:350px;padding:7px 10px;font:12px Verdana;border:1px solid #ccc;background:#fffeed; line-height:15px;height:15px; _overflow:hidden;}
+.container4 li {float:left;padding:0 10px; border-right:1px solid #ccc; }
+.container4 div {float:left;color:#000;padding-right:10px;}
+
+li.menu4 {position:relative;margin-left:-1px; top:-1px; z-index:9999;border:1px solid #85ccff; border-bottom:0; padding-bottom:8px; color:#ff6026; background:#dbf3ff;}
+
+.container4_2 {width:350px;padding:10px;border:1px solid #85ccff;background:#dbf3ff;line-height:25px;font-size:14px; font-weight:bold;display:none;}
+
+.container4_2 a{ display:block;_zoom:1;}
+.container4_2 a:link, .container4_2 a:visited, .container4_2 a:active {color:#565553;text-decoration: none;}
+.container4_2 a:hover {color:#ff5500;text-decoration: underline;}
+
+.container4 a:link, .container4 a:visited, .container4 a:hover, .container4 a:active {color:#565553;text-decoration: none;}
+.menu4 a:link, .menu4 a:visited, .menu4 a:active {color:#ff6026;}
+.menu4 a:hover{color:#ff6026;text-decoration:underline;}
+</style>
+<div id="idContainer4" class="container4">
+	<div><b>Tag索引</b></div>
+	<ul id="idMenu4">
+		<li id="idMenu4_1"><a href="javascript:;">Table</a></li>
+		<li id="idMenu4_2"><a href="javascript:;">Fixed</a></li>
+		<li id="idMenu4_3"><a href="javascript:;">Color</a></li>
+		<li id="idMenu4_4"><a href="javascript:;">Date</a></li>
+		<li id="idMenu4_5"><a href="javascript:;">Select</a></li>
+	</ul>
+</div>
+<ul id="idContainer4_2" class="container4_2">
+	<li id="idMenu4_11"><a href="2009/05/18/TableFixed.html">Table行定位效果</a></li>
+	<li id="idMenu4_12"><a href="2008/10/06/TableOrder.html">Table排序</a></li>
+	<li id="idMenu4_21"><a href="2009/07/07/FixedTips.html">浮动定位提示效果</a></li>
+	<li id="idMenu4_22"><a href="2008/09/15/1290954.html">仿LightBox内容显示效果</a></li>
+	<li id="idMenu4_31"><a href="2009/03/11/color.html">颜色梯度和渐变效果</a></li>
+	<li id="idMenu4_41"><a href="2008/08/23/1274459.html">blog式日历控件</a></li>
+	<li id="idMenu4_42"><a href="2008/10/28/1040403.html">日期联动选择器</a></li>
+	<li id="idMenu4_51"><a href="2008/06/24/1228736.html">多级联动select</a></li>
+</ul>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<script>
+	var menu4 = [{
+		id: 1,
+		parent: 0,
+		elem: 'idMenu4_1',
+		active: "menu4"
+	},
+	{
+		id: 2,
+		parent: 0,
+		elem: 'idMenu4_2',
+		active: "menu4"
+	},
+	{
+		id: 3,
+		parent: 0,
+		elem: 'idMenu4_3',
+		active: "menu4"
+	},
+	{
+		id: 4,
+		parent: 0,
+		elem: 'idMenu4_4',
+		active: "menu4"
+	},
+	{
+		id: 5,
+		parent: 0,
+		elem: 'idMenu4_5',
+		active: "menu4"
+	},
+	{
+		id: 11,
+		parent: 1,
+		elem: 'idMenu4_11'
+	},
+	{
+		id: 12,
+		parent: 1,
+		elem: 'idMenu4_12'
+	},
+	{
+		id: 21,
+		parent: 2,
+		elem: 'idMenu4_21'
+	},
+	{
+		id: 22,
+		parent: 2,
+		elem: 'idMenu4_22'
+	},
+	{
+		id: 31,
+		parent: 3,
+		elem: 'idMenu4_31'
+	},
+	{
+		id: 41,
+		parent: 4,
+		elem: 'idMenu4_41'
+	},
+	{
+		id: 42,
+		parent: 4,
+		elem: 'idMenu4_42'
+	},
+	{
+		id: 51,
+		parent: 5,
+		elem: 'idMenu4_51'
+	}];
+
+	new FixedMenu([{
+		id: "idContainer4",
+		menu: "idMenu4"
+	},
+	"idContainer4_2"], {
+		menu: menu4,
+		relContainer: true,
+		relative: {
+			align: "clientleft",
+			vAlign: "bottom",
+			customTop: -1
+		}
+	});
+</script>
+</body>
+</html>

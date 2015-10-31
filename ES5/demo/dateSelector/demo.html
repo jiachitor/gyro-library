@@ -1,0 +1,27 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>日期联动选择器</title>
+<script type="text/javascript" src="../../src/plug-in/dateselector.js"></script>
+</head>
+
+<body>
+<select id="idYear">
+</select>
+<select id="idMonth">
+</select>
+<select id="idDay">
+</select>
+<br />
+你选择的日期：<span id="idShow"></span> 
+<script>
+	var ds = new DateSelector("idYear", "idMonth", "idDay", {
+		MaxYear: new Date().getFullYear() + 10,
+		MinYear: 2010,
+		onChange: function(){ document.getElementById("idShow").innerHTML = this.Year + "/" + this.Month + "/" + this.Day; }
+	});
+	ds.onChange();
+</script>
+</body>
+</html>

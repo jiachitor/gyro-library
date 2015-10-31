@@ -91,7 +91,7 @@ function deepextend(destination, source) {
         var copy = source[property];
         if (destination === copy) continue;
         if (typeof copy === "object") {
-            destination[property] = arguments.callee(destination[property] || {},
+            destination[property] = deepextend(destination[property] || {},
                 copy);
         } else {
             destination[property] = copy;

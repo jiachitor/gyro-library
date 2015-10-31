@@ -1,0 +1,219 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>JavaScript 滑动条效果</title>
+</head>
+<body>
+<script type="text/javascript" src="../../src/plug-in/drag.js"></script>
+<script type="text/javascript" src="../../src/plug-in/scrollBar.js"></script>
+
+<p>预览效果1：</p>
+<style type="text/css">
+.container{width:600px; background:#3E3E3E; overflow:hidden; color:#fff; padding:10px 20px; font-size:12px;}
+
+.content{ overflow:hidden; margin-bottom:10px;width:600px;}
+.content div{ width:130px; margin:5px; padding:5px; padding-bottom:0; height:120px; line-height:20px; background-color:#000000;}
+.content div img{ width:130px; height:100px; border:0;display:block;}
+
+.slider{ padding:1px 0; position:relative;background:#0A0A0A; height:15px; border-bottom:1px solid #545454;border-top:1px solid #545454; float:left; width:544px;cursor:pointer; }
+.slider_left, .slider_right{ background:url(http://pic002.cnblogs.com/img/cloudgamer/200812/2008122223581198.gif) no-repeat; height:19px; width:28px; float:left; cursor:pointer;}
+.slider_left{background-position:left top;}
+.slider_right{background-position:right top;}
+
+.bar{ height:15px; width:150px; background:url(http://pic002.cnblogs.com/img/cloudgamer/200812/2008122223573480.gif) left top repeat-x;}
+.bar_left, .bar_right{background:url(http://pic002.cnblogs.com/img/cloudgamer/200812/2008122223580168.gif) no-repeat;height:15px; _font-size:0; width:6px; position:absolute; top:0px;}
+.bar_left{background-position:left top;left:-6px;}
+.bar_right{background-position:right top;right:-6px;}
+</style>
+<div id="idContainer" class="container" >
+	<div id="idContent" class="content">
+		<table cellpadding="0" cellspacing="0">
+			<tr align="center">
+				<td><div><a href="http://www.cnblogs.com/cloudgamer/archive/2008/07/21/1247267.html"><img src="http://images.cnblogs.com/cnblogs_com/cloudgamer/143727/r_rt_2.jpg" /></a>1. 图片切割</div></td>
+				<td><div><a href="http://www.cnblogs.com/cloudgamer/archive/2008/07/06/1236770.html"><img src="http://images.cnblogs.com/cnblogs_com/cloudgamer/143727/r_rt_1.jpg" /></a>2. 图片切换展示</div></td>
+				<td><div><a href="http://www.cnblogs.com/cloudgamer/archive/2008/05/23/1205642.html"><img src="http://images.cnblogs.com/cnblogs_com/cloudgamer/143727/r_rt_3.jpg" /></a>3. 图片变换效果</div></td>
+				<td><div><a href="http://www.cnblogs.com/cloudgamer/archive/2008/10/20/1314766.html"><img src="http://images.cnblogs.com/cnblogs_com/cloudgamer/143727/r_rt_5.jpg" /></a>4. 无刷新上传</div></td>
+				<td><div><a href="http://www.cnblogs.com/cloudgamer/archive/2008/05/13/1194272.html"><img src="http://images.cnblogs.com/cnblogs_com/cloudgamer/143727/r_rt_4.jpg" /></a>5. 图片滑动展示</div></td>
+				<td><div><a href="http://www.cnblogs.com/cloudgamer/archive/2008/05/13/1194272.html"><img src="http://images.cnblogs.com/cnblogs_com/cloudgamer/143727/r_rt_4.jpg" /></a>6. 图片滑动展示</div></td>
+				<td><div><a href="http://www.cnblogs.com/cloudgamer/archive/2008/05/13/1194272.html"><img src="http://images.cnblogs.com/cnblogs_com/cloudgamer/143727/r_rt_4.jpg" /></a>7. 图片滑动展示</div></td>
+			</tr>
+		</table>
+	</div>
+	<div class="slider_left" id="idSliderLeft"></div>
+	<div class="slider" id="idSlider">
+		<div class="bar" id="idBar">
+			<div class="bar_left"></div>
+			<div class="bar_right"></div>
+		</div>
+	</div>
+	<div class="slider_right" id="idSliderRight"></div>
+</div>
+<script>
+	var sld = new ScrollBar("idSlider", "idBar", {
+		MaxValue: document.getElementById("idContent").scrollWidth - document.getElementById("idContent").clientWidth,
+		onMin: function() {
+			document.getElementById("idSliderLeft").style.backgroundPosition = "bottom left";
+		},
+		onMax: function() {
+			document.getElementById("idSliderRight").style.backgroundPosition = "bottom right";
+
+		},
+		onMid: function() {
+			document.getElementById("idSliderLeft").style.backgroundPosition = "top left";
+			document.getElementById("idSliderRight").style.backgroundPosition = "top right";
+		},
+		onMove: function() {
+			document.getElementById("idContent").scrollLeft = this.GetValue();
+			if (this.GetPercent() >= 1) {       //当到达最大值时
+				sld.SetPercent(1);
+			}
+		}
+	});
+
+	sld.SetPercent(.5); //设置一个初始位置
+	sld.Ease = true;
+
+
+	document.getElementById("idSliderLeft").onmouseover = function() {
+		sld.Run(false);
+	}
+	document.getElementById("idSliderLeft").onmouseout = function() {
+		sld.Stop();
+	}
+
+	document.getElementById("idSliderRight").onmouseover = function() {
+		sld.Run(true);
+	}
+	document.getElementById("idSliderRight").onmouseout = function() {
+		sld.Stop();
+	}
+</script>
+<br />
+<p>预览效果2：</p>
+<style type="text/css">
+.container2{width:425px;background:#fff; border:1px solid #000000;}
+
+.content2{ overflow:hidden;height:200px;width:400px; _float:left; padding:2px; padding-right:0; margin:0; line-height:1.5em;}
+
+.slider2{height:200px; width:18px; background-color:#eee; border:2px solid #EAE6DD; float:right; position: relative;}
+.bar2{width:14px; border:2px outset buttonhighlight; background-color:#D4D0C8; _font-size:0;}
+</style>
+<div id="idContainer2" class="container2">
+	<div id="idSlider2" class="slider2">
+		<div id="idBar2" class="bar2"></div>
+	</div>
+	<ul id="idContent2" class="content2">
+		<li>1. <a href="http://www.cnblogs.com/cloudgamer/archive/2008/07/21/1247267.html">JavaScript 图片切割效果</a> </li>
+		<li>2. <a href="http://www.cnblogs.com/cloudgamer/archive/2008/07/06/1236770.html">JavaScript 图片切换展示效果</a> </li>
+		<li>3. <a href="http://www.cnblogs.com/cloudgamer/archive/2008/05/23/1205642.html">JavaScript 图片变换效果(ie only)</a> </li>
+		<li>4. <a href="http://www.cnblogs.com/cloudgamer/archive/2008/09/15/1290954.html">JavaScript 仿LightBox内容显示效果</a> </li>
+		<li>5. <a href="http://www.cnblogs.com/cloudgamer/archive/2008/10/20/1314766.html">仿163网盘无刷新文件上传系统</a> </li>
+		<li>6. <a href="http://www.cnblogs.com/cloudgamer/archive/2008/05/13/1194272.html">JavaScript 图片滑动展示效果</a> </li>
+		<li>7. <a href="http://www.cnblogs.com/cloudgamer/archive/2008/06/28/1231557.html">JavaScript 自定义多级联动浮动菜单</a> </li>
+		<li>8. <a href="http://www.cnblogs.com/cloudgamer/archive/2008/08/27/1277131.html">JavaScript 渐变效果</a> </li>
+		<li>9. <a href="http://www.cnblogs.com/cloudgamer/archive/2008/10/05/1303993.html">图片切割系统</a> </li>
+		<li>10. <a href="http://www.cnblogs.com/cloudgamer/archive/2008/11/17/1334778.html">JavaScript 拖放效果</a> </li>
+		<li>11. <a href="http://www.cnblogs.com/cloudgamer/archive/2008/12/03/1346386.html">JavaScript 拖拉缩放效果</a> </li>
+		<li>12. <a href="http://www.cnblogs.com/cloudgamer/archive/2008/04/30/1177682.html">JavaScript 无缝上下左右滚动加定高定宽停顿效果</a> </li>
+		<li>13. <a href="http://www.cnblogs.com/cloudgamer/archive/2008/10/06/1304414.html">JavaScript Table排序</a> </li>
+		<li>14. <a href="http://www.cnblogs.com/cloudgamer/archive/2008/05/17/1201386.html">JavaScript 弹簧效果</a> </li>
+		<li>15. <a href="http://www.cnblogs.com/cloudgamer/archive/2008/08/23/1274459.html">JavaScript blog式日历控件</a> </li>
+		<li>16. <a href="http://www.cnblogs.com/cloudgamer/archive/2008/10/28/1040403.html">JavaScript 日期联动选择器</a> </li>
+		<li>17. <a href="http://www.cnblogs.com/cloudgamer/archive/2008/06/24/1228736.html">JavaScript 自定义多级联动下拉菜单</a> </li>
+		<li>18. <a href="http://www.cnblogs.com/cloudgamer/archive/2008/05/16/1200705.html">JavaScript 滑移效果</a> </li>
+		<li>19. <a href="http://www.cnblogs.com/cloudgamer/archive/2008/01/15/1040404.html">JavaScript 颜色渐变效果</a> </li>
+	</ul>
+</div>
+<script>
+	document.getElementById("idBar2").style.height = document.getElementById("idSlider2").clientHeight * Math.min(document.getElementById("idContent2").clientHeight / document.getElementById("idContent2").scrollHeight, 1) - 4 + "px";
+
+	var sld2 = new ScrollBar("idSlider2", "idBar2", {
+		Horizontal: false,
+		MaxValue: document.getElementById("idContent2").scrollHeight - document.getElementById("idContent2").clientHeight,
+		onMove: function() {
+			document.getElementById("idContent2").scrollTop = this.GetValue();
+			if (this._IsMax) {       //当到达最大值时 ,阻止滑动条拖动
+
+			}
+		}
+	});
+
+	sld2.WheelBind(document.getElementById("idContent2"));
+	sld2.KeyBind(document.getElementById("idContent2"));
+</script>
+<br />
+<p>预览效果3：</p>
+<style type="text/css">
+.slider3{height:19px; width:600px; background-color:#eee; border:2px solid #EAE6DD; margin:10px 0px;}
+.bar3 {height:15px; width:10px; border:2px outset buttonhighlight; background-color:#D4D0C8;_font-size:0; }
+</style>
+<div id="idSlider3" class="slider3">
+	<div id="idBar3" class="bar3"></div>
+</div>
+<div id="idShow"> 当前值：<span id="idCurrentValue"></span><br />
+	当前百分比：<span id="idCurrentPercent"></span>%<br />
+	状态：<span id="idCurrentState">未开始</span><br />
+	设置最小值：
+	<input id="txtMin" type="text" value="0" size="5" />
+	设置最大值：
+	<input id="txtMax" type="text" value="100" size="5" />
+	<br />
+	移动到：
+	<input id="txtMove" type="text" value="50" size="5" />
+	<input id="btnMoveV" type="button" value="按实际值" />
+	<input id="btnMoveP" type="button" value="按百分比" />
+	<br />
+	<input id="btnEase" type="button" value="设置缓动" />
+</div>
+<script>
+	var sld3 = new ScrollBar("idSlider3", "idBar3", {
+		onMin: function() {
+			document.getElementById("idCurrentState").innerHTML = "到达开始值";
+		},
+		onMax: function() {
+			document.getElementById("idCurrentState").innerHTML = "到达结束值";
+		},
+		onMid: function() {
+			document.getElementById("idCurrentState").innerHTML = "滑动中";
+		},
+		onMove: function() {
+			document.getElementById("idCurrentValue").innerHTML = Math.round(this.GetValue());
+			document.getElementById("idCurrentPercent").innerHTML = Math.round(this.GetPercent() * 100);
+			if (this._IsMax) {       //当到达最大值时  ,阻止滑动条拖动
+
+			}
+		}
+	});
+
+	document.getElementById("txtMin").onchange = function() {
+		sld3.MinValue = parseInt(document.getElementById("txtMin").value, 10);
+	}
+	document.getElementById("txtMax").onchange = function() {
+		sld3.MaxValue = parseInt(document.getElementById("txtMax").value, 10);
+	}
+
+	document.getElementById("txtMin").onchange();
+	document.getElementById("txtMax").onchange();
+
+	sld3.onMove();
+
+	document.getElementById("btnMoveV").onclick = function() {
+		sld3.SetValue(parseInt(document.getElementById("txtMove").value, 10));
+	}
+	document.getElementById("btnMoveP").onclick = function() {
+		sld3.SetPercent(parseInt(document.getElementById("txtMove").value, 10) / 100);
+	}
+
+	document.getElementById("btnEase").onclick = function() {
+		if (sld3.Ease) {
+			sld3.Ease = false;
+			this.value = "设置缓动";
+		} else {
+			sld3.Ease = true;
+			this.value = "取消缓动";
+		}
+	}
+</script>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>multimenu插件-有特效的下拉菜单</title>
+<link rel="stylesheet" href="style.css" type="text/css" />
+
+</head>
+<body>
+<ul class="menu" id="menu">
+	<li><a href="#" class="menulink">栏目1</a>
+		<ul>
+			<li><a href="#">二级栏目1</a></li>
+			<li> <a href="#" class="sub">二级栏目2</a>
+				<ul>
+					<li class="topline"><a href="#">三级栏目1</a></li>
+					<li><a href="#">三级栏目2</a></li>
+					<li><a href="#">三级栏目3</a></li>
+					<li><a href="#">三级栏目4</a></li>
+					<li><a href="#">三级栏目5</a></li>
+				</ul>
+			</li>
+			<li> <a href="#" class="sub">二级栏目3</a>
+				<ul>
+					<li class="topline"><a href="#">三级栏目1</a></li>
+					<li><a href="#">三级栏目2</a></li>
+					<li> <a href="#" class="sub">三级栏目3</a>
+						<ul>
+							<li class="topline"><a href="#">四级栏目1</a></li>
+							<li><a href="#">四级栏目2</a></li>
+							<li><a href="#">四级栏目3</a></li>
+							<li><a href="#">四级栏目4</a></li>
+							<li><a href="#">四级栏目5</a></li>
+							<li><a href="#">si级栏目6</a></li>
+						</ul>
+					</li>
+					<li><a href="#">三级栏目4</a></li>
+				</ul>
+			</li>
+			<li><a href="#">三级栏目4</a></li>
+			<li><a href="#">三级栏目5</a></li>
+		</ul>
+	</li>
+	<li><a href="#" class="menulink">栏目2</a></li>
+	<li> <a href="#" class="menulink">栏目3</a>
+		<ul>
+			<li><a href="#">二级栏目1</a></li>
+			<li> <a href="#" class="sub">二级栏目2</a>
+				<ul>
+					<li class="topline"><a href="#">三级栏目1</a></li>
+					<li><a href="#">三级栏目2</a></li>
+					<li><a href="#">三级栏目3</a></li>
+				</ul>
+			</li>
+		</ul>
+	</li>
+	<li> <a href="#" class="menulink">栏目4</a>
+		<ul>
+			<li><a href="#">二级栏目1</a></li>
+			<li><a href="#">二级栏目2</a></li>
+			<li><a href="#">二级栏目3</a></li>
+			<li><a href="#">二级栏目4</a></li>
+			<li><a href="#">二级栏目5</a></li>
+			<li> <a href="#" class="sub">二级栏目6</a>
+				<ul>
+					<li class="topline"><a href="#">三级栏目1</a></li>
+					<li><a href="#">三级栏目2</a></li>
+				</ul>
+			</li>
+			<li><a href="#">二级栏目7</a></li>
+			<li><a href="#">二级栏目8</a></li>
+			<li><a href="#">二级栏目9</a></li>
+			<li><a href="#">二级栏目10</a></li>
+		</ul>
+	</li>
+</ul>
+<script type="text/javascript" src="../../src/plug-in/multimenu.js"></script>
+<script type="text/javascript">
+	var menu = new Multimenu({
+		id: 'menu', //选择焦点图ID
+		thisclass: 'menuhover' //触发事件时添加的class名
+	});
+</script>
+</body>
+</html>

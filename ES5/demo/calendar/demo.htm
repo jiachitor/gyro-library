@@ -1,0 +1,100 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>blog式日历控件</title>
+<style type="text/css">
+.Calendar {
+	font-family:Verdana;
+	font-size:12px;
+	background-color:#e0ecf9;
+	text-align:center;
+	width:210px;
+	padding:10px;
+	line-height:1.5em;
+}
+.Calendar a{
+	color:#1e5494;
+	text-decoration:none;
+}
+
+.Calendar table{
+	width:100%; 
+	border:0;
+	margin:5px 0;
+}
+
+.Calendar table thead{color:#acacac;}
+
+.Calendar table td {
+	font-size: 11px;
+	padding:1px;
+}
+.Calendar  .CalendarPre{
+	cursor:pointer;
+	float:left;
+	padding-right:5px;
+}
+.Calendar .CalendarNext{
+	cursor:pointer;
+	float:right;
+	padding-right:5px; 
+}
+.Calendar td.onToday {
+	font-weight:bold;
+	color:#C60;
+}
+.Calendar td.onSelect {
+	font-weight:bold;
+}
+.Calendar .test input{ position:absolute; top:0px;}
+.Calendar .CalendarHour{ width:18px; border:none;}
+.Calendar .CalendarMinute{ width:18px; border:none;}
+.Calendar .buttonBox input{}
+</style>
+</head>
+<body>
+
+		<input type="text" value="" id="Calendar_input1" style="left:0px;height:15px;" style="display:block;">
+		<input type="text" value="" id="Calendar_input2" style="left:200px;height:15px;" style="display:block;">
+
+
+	<!--下面的这个日历div最好放在页面的尾部-->
+	<div class="Calendar" id="Calendar" style="position:absolute; top:0px; left:-9999px;">
+		<div class="CalendarPre">&lt;&lt;</div>
+		<div class="CalendarNext">&gt;&gt;</div>
+		<span class="CalendarYear"></span>年 <span class="CalendarMonth"></span>月
+		<input type="text" class="CalendarHour" value="">时
+		<input type="text" class="CalendarMinute" value="">分
+		<table cellspacing="0">
+			<thead>
+				<tr>
+					<td>日</td>
+					<td>一</td>
+					<td>二</td>
+					<td>三</td>
+					<td>四</td>
+					<td>五</td>
+					<td>六</td>
+				</tr>
+			</thead>
+			<tbody >
+			</tbody>
+		</table>
+		<div class="buttonBox">
+			<input class="CalendarPreYear" type="button" value="上一年" />
+			<input class="CalendarNow" type="button" value="当前月" />
+			<input class="CalendarNextYear" type="button" value="下一年" />
+			<input class="CalendarQd" type="button" value="确定" />
+			<input class="isWho" type="text" value=""  style="display:none;">
+		</div>
+	 </div>
+
+
+</body>
+</html>
+<script type="text/javascript" src="../../src/plug-in/calendar.js"></script>
+<script language="JavaScript">
+	var cale1 = new Calendar("Calendar_input1",{position:true});
+	var cale2 = new Calendar("Calendar_input2",{position:true});
+</script>

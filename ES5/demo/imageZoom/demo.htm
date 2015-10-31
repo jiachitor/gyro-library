@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>ImageZoom 图片放大效果（扩展篇）</title>
+    <script src="../../src/plug-in/imagezoom.js"></script>
+    <script>
+    function extend(destination, source, override) {
+        if (override === undefined) override = true;
+        for (var property in source) {
+            if (override || !(property in destination)) {
+                destination[property] = source[property];
+            };
+        };
+        return destination;
+    };
+    
+    function each(object, callback) {
+        if (undefined === object.length) {
+            for (var name in object) {
+                if (false === callback(object[name], name, object)) break;
+            }
+        } else {
+            for (var i = 0, len = object.length; i < len; i++) {
+                if (i in object) {
+                    if (false === callback(object[i], i, object)) break;
+                }
+            }
+        };
+    };
+
+    function forEach(object, callback, thisp) {
+        each(object, function() {
+            callback.apply(thisp, arguments);
+        });
+    };
+    </script></head>
+<body style="padding:100px">
+    <style>
+
+    .container {
+        position: relative;
+    }
+
+    .izImage, .izViewer {
+        border: 1px solid #000;
+        background: #fff url('http://www.cnblogs.com/images/cnblogs_com/cloudgamer/169629/o_loading.gif') no-repeat center;
+    }
+
+    .izImage {
+        width: 300px;
+    }
+
+    .izViewer {
+        width: 200px;
+        height: 200px;
+        position: absolute;
+        left: 320px;
+        top: 0;
+        display: none;
+    }
+
+</style>
+    模式选择：
+    <br>
+    <input name="izMode" type="radio" value="simple" checked>
+    一般模式
+    <input name="izMode" type="radio" value="follow">
+    跟随模式
+    <input name="izMode" type="radio" value="handle">
+    手柄模式
+    <input name="izMode" type="radio" value="cropper">
+    切割模式
+    <input name="izMode" type="radio" value="handle-cropper">
+    手柄切割模式
+    <br>
+    <br>
+
+    <div class="container">
+        <img id="idImage" class="izImage"
+                            src="http://www.cnblogs.com/images/cnblogs_com/cloudgamer/143727/o_mm_small.jpg"/>
+
+        <div id="idViewer" class="izViewer"></div>
+    </div>
+    <div id="idHandle" style="display:none;opacity:0.5;filter:alpha(opacity=50);background:#fff;"></div>
+    <div id="idHandle2" style="display:none;border:1px solid #000;"></div>
+    <script>
+    var options = {
+                scale: 5,
+                zoomPic: "http://www.cnblogs.com/images/cnblogs_com/cloudgamer/143727/o_mm_big.jpg"
+            },
+            iz = new ImageZoom("idImage", "idViewer", options);
+
+    forEach(document.getElementsByName("izMode"),
+            function (elem) {
+                elem.onclick = function () {
+                    iz.dispose();
+                    iz = new ImageZoom("idImage", "idViewer", extend(options, {
+                        mode: this.value,
+                        handle: this.value == "handle" ? "idHandle" : "idHandle2"
+                    }));
+                }
+            });
+</script>
+    <br>
+    仿凡客诚品(vancl)商品图片放大效果
+    <style>
+    .list {
+        padding-right: 10px;
+    }
+
+    .list img {
+        cursor: pointer;
+        padding: 1px;
+        border: 1px solid #cdcdcd;
+        margin-bottom: 10px;
+        display: block;
+    }
+
+    .list img.onzoom, .list img.on {
+        padding: 0px;
+        border: 2px solid #336699;
+    }
+
+    .izImage2 {
+        border: 0;
+        width: 400px;
+    }
+
+    .izViewer2 {
+        width: 360px;
+        height: 300px;
+        position: absolute;
+        left: 420px;
+        top: 0;
+        display: none;
+        border: 1px solid #999;
+    }
+
+    .handle2 {
+        display: none;
+        opacity: 0.6;
+        filter: alpha(opacity=60);
+        background: #E6EAF3;
+        cursor: crosshair;
+    }
+
+</style>
+    <table>
+        <tr>
+            <td valign="top">
+                <div id="idList" class="list"></div>
+            </td>
+            <td>
+                <div class="container">
+                    <img id="idImage2" class="izImage2"/>
+
+                    <div id="idViewer2" class="izViewer2"></div>
+                </div>
+            </td>
+        </tr>
+    </table>
+    <div id="idHandle3" class="handle2"></div>
+    <script>
+    (function () {
+        var iz = new ImageZoom("idImage2", "idViewer2", {
+            mode: "handle",
+            handle: "idHandle3",
+            scale: 2,
+            delay: 0
+        });
+
+        var arrPic = [],
+                list = document.getElementById("idList"),
+                image = document.getElementById("idImage2");
+
+        arrPic.push({
+            smallPic: "http://www.cnblogs.com/images/cnblogs_com/cloudgamer/241722/o_s_1.jpg",
+            originPic: "http://www.cnblogs.com/images/cnblogs_com/cloudgamer/241722/o_m_1.jpg",
+            zoomPic: "http://www.cnblogs.com/images/cnblogs_com/cloudgamer/241722/o_b_1.jpg"
+        });
+        arrPic.push({
+            smallPic: "http://www.cnblogs.com/images/cnblogs_com/cloudgamer/241722/o_s_2.jpg",
+            originPic: "http://www.cnblogs.com/images/cnblogs_com/cloudgamer/241722/o_m_2.jpg",
+            zoomPic: "http://www.cnblogs.com/images/cnblogs_com/cloudgamer/241722/o_b_2.jpg"
+        });
+
+        forEach(arrPic,
+                function (o, i) {
+                    var img = list.appendChild(document.createElement("img"));
+                    img.src = o.smallPic;
+                    img.onclick = function () {
+                        iz.reset({
+                            originPic: o.originPic,
+                            zoomPic: o.zoomPic
+                        });
+                        forEach(list.getElementsByTagName("img"),
+                                function (img) {
+                                    img.className = "";
+                                });
+                        img.className = "onzoom";
+                    }
+
+                    var temp;
+                    img.onmouseover = function () {
+                        if (!this.className) {
+                            this.className = "on";
+                            temp = image.src;
+                            image.src = o.originPic;
+                        }
+                    }
+                    img.onmouseout = function () {
+                        if (this.className == "on") {
+                            this.className = "";
+                            image.src = temp;
+                        }
+                    }
+
+                    if (!i) {
+                        img.onclick();
+                    }
+                })
+    })()
+</script>
+
+</body>
+</html>

@@ -1,0 +1,7 @@
+这个多级下拉菜单的脚本大小不到2K，带有动画效果，可以方便地支持多个实例，并且能良好兼容WordPress系统wp_list_cats和wp_list_pages生成的多级列表。 
+要初始化一个菜单，只需要以下代码： 
+var menu=new menu.dd('menu'); 
+menu.init('menu','menuhover'); 
+
+你必须在菜单初始化之前创建一个菜单实例。脚本里的menu.dd是菜单的实例名，函数object.init采用了两个参数：菜单的无序列表ID和最初排序的列名（可选）。如果你不想进行排序，可以添加class=“nosort”到适当的表头。菜单的样式完全由CSS定义。 
+此弹出菜单已经在Firefox 2/3，IE 6/7/8，Opera，Safari 和 Chrome 上测试通过。但需要注意的是，菜单动画在在Firefox 2 和Opera 下无效，但并不影响下拉效果。
