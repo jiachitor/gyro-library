@@ -16,7 +16,9 @@
   },
   "dependencies": {
     "gulp": "github:gulpjs/gulp#4.0",
-    "jquery": "^1.11.3"
+    "gulp-sass": "^2.1.0",
+    "jquery": "^1.11.3",
+    "lodash": "^3.10.1"
   },
   "devDependencies": {
     "babel": "^5.8.23",
@@ -26,9 +28,7 @@
     "gulp-minify-css": "^1.2.1",
     "gulp-notify": "^2.2.0",
     "gulp-rename": "^1.2.2",
-    "gulp-sass": "^2.0.4",
     "gulp-util": "^3.0.7",
-    "lodash": "^3.10.1",
     "lodash.assign": "^3.2.0",
     "vinyl-source-stream": "^1.1.0"
   },
